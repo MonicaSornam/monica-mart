@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Products Catalog — MONICA MART</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+    <!-- Header -->
+    <header class="site-header">
+        <div class="container header-inner">
+            <a href="index.html" class="logo">
+                <div class="logo-icon">M</div>
+                MONICA <span>MART</span>
+            </a>
+            <button class="mobile-nav-toggle" id="mobile-nav-toggle">☰</button>
+            <ul class="nav-links" id="main-nav"></ul>
+        </div>
+    </header>
+
+    <main class="container" style="margin-top: 30px; margin-bottom: 50px;">
+        <div style="margin-bottom: 24px;">
+            <h1 style="font-size: 2rem;">Marketplace Products</h1>
+            <p class="text-muted">Explore authentic items from multiple independent sellers</p>
+        </div>
+
+        <!-- Search & Filter Controls -->
+        <section class="search-filter-section">
+            <div class="search-row">
+                <div class="search-input-wrap">
+                    <input type="text" id="search-input" class="search-input" placeholder="Search products by name or description... (e.g. watch, laptop)">
+                </div>
+                <button class="btn btn-primary" onclick="performSearch()">🔍 Search</button>
+                <button class="btn btn-secondary" onclick="resetFilters()">Reset</button>
+            </div>
+            <div class="category-pills" id="category-pills">
+                <span class="category-pill active" data-category="All" onclick="selectCategory('All')">All Categories</span>
+                <span class="category-pill" data-category="Electronics" onclick="selectCategory('Electronics')">Electronics</span>
+                <span class="category-pill" data-category="Fashion" onclick="selectCategory('Fashion')">Fashion</span>
+                <span class="category-pill" data-category="Accessories" onclick="selectCategory('Accessories')">Accessories</span>
+                <span class="category-pill" data-category="Home" onclick="selectCategory('Home')">Home</span>
+                <span class="category-pill" data-category="Beauty" onclick="selectCategory('Beauty')">Beauty</span>
+            </div>
+        </section>
+
+        <!-- Products Listing Grid -->
+        <div class="products-grid" id="products-catalog-grid">
+            <div style="grid-column: 1/-1; text-align: center; padding: 40px;">
+                <p class="text-muted">Fetching catalog from Drogon SQLite backend...</p>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="site-footer">
+        <div class="container footer-inner">
+            <div>
+                <strong style="color: var(--primary);">MONICA MART</strong> — Multi-Seller E-Commerce Marketplace
+                <p style="font-size: 0.82rem; margin-top: 4px;">Developer: Monica Sornam | College Capstone Project</p>
+            </div>
+            <div>&copy; 2026 MONICA MART. All rights reserved.</div>
+        </div>
+    </footer>
+
+    <script src="js/app.js"></script>
+    <script>
+        let currentCategory = 'All';
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const urlParams = new URLSearchParams(window.location.search);
+            const catParam = urlParams.get('category');
+            const searchParam = urlParams.get('search');
+
+            if (catParam) currentCategory = catParam;
+            if (searchParam) document.getElementById('search-input').value = searchParam;
+
+            // Trigger search on enter
+            document.getElementById('search-input').addEventListener('keydown', (e) => {
+                if (e.key === 'Enter') performSearch();
+            });
+
+            loadProducts();
+        });
+
+        function selectCategory(cat) {
+            currentCategory = cat;
+            document.querySelectorAll('.category-pill').forEach(pill => {
+                pill.classList.toggle('active', pill.getAttribute('data-category') === cat);
+            });
+            loadProducts();
+        }
+
+        function performSearch() {
+            loadProducts();
+        }
+
+        function resetFilters() {
+            document.getElementById('search-input').value = '';
+            selectCategory('All');
+        }
+
+        async function loadProducts() {
+            const searchVal = document.getElementById('search-input').value.trim();
+            const grid = document.getElementById('products-catalog-grid');
+
+            let query = `/products?`;
+            if (currentCategory && currentCategory !== 'All') {
+                query += `category=${encodeURIComponent(currentCategory)}&`;
+            }
+            if (searchVal) {
+                query += `search=${encodeURIComponent(searchVal)}&`;
+            }
+
+            grid.innerHTML = '<div style="grid-column: 1/-1; text-align: center; padding: 30px;"><p class="text-muted">Searching products...</p></div>';
+
+            const res = await apiRequest(query);
+            if (res.ok && res.data.success) {
+                const products = res.data.products;
+                if (products.length === 0) {
+                    grid.innerHTML = `
+                        <div style="grid-column: 1/-1; text-align: center; padding: 60px; background: white; border-radius: 10px; border: 1px solid var(--border);">
+                            <p style="font-size: 1.2rem; font-weight: 600; color: var(--text-main); margin-bottom: 8px;">No matching products found</p>
+                            <p class="text-muted" style="margin-bottom: 16px;">Try adjusting your search keyword or selecting a different category.</p>
+                            <button class="btn btn-primary" onclick="resetFilters()">View All Products</button>
+                        </div>
+                    `;
+                    return;
+                }
+
+                grid.innerHTML = products.map(p => `
+                    <div class="product-card">
+                        <div class="product-image-container">
+                            <span class="product-category-tag">${p.category}</span>
+                            <a href="product-details.html?id=${p.product_id}">
+                                <img src="${p.image || 'https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=600'}" alt="${p.product_name}" class="product-image">
+                            </a>
+                        </div>
+                        <div class="product-card-body">
+                            <div class="product-seller">Seller: <strong>${p.seller_name}</strong></div>
+                            <h3 class="product-title">
+                                <a href="product-details.html?id=${p.product_id}">${p.product_name}</a>
+                            </h3>
+                            <div class="product-rating">
+                                ★ ${p.rating > 0 ? p.rating : '5.0'} <span>(${p.review_count} reviews)</span>
+                            </div>
+                            <div class="product-price-row">
+                                <div class="product-price">${formatPrice(p.price)}</div>
+                                <div class="product-stock ${p.quantity <= 0 ? 'out-of-stock' : ''}">
+                                    ${p.quantity > 0 ? `${p.quantity} available` : 'Out of stock'}
+                                </div>
+                            </div>
+                            <button class="btn btn-primary btn-block" onclick="quickAddToCart(${p.product_id})" ${p.quantity <= 0 ? 'disabled' : ''}>
+                                ${p.quantity > 0 ? '🛒 Add to Cart' : 'Out of Stock'}
+                            </button>
+                        </div>
+                    </div>
+                `).join('');
+            } else {
+                grid.innerHTML = '<p style="grid-column: 1/-1; text-align: center; color: red;">Failed to load products.</p>';
+            }
+        }
+    </script>
+</body>
+</html>
