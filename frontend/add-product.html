@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add New Product — MONICA MART</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+    <!-- Header -->
+    <header class="site-header">
+        <div class="container header-inner">
+            <a href="index.html" class="logo">
+                <div class="logo-icon">M</div>
+                MONICA <span>MART</span>
+            </a>
+            <button class="mobile-nav-toggle" id="mobile-nav-toggle">☰</button>
+            <ul class="nav-links" id="main-nav"></ul>
+        </div>
+    </header>
+
+    <main class="container" style="margin-top: 30px; margin-bottom: 60px;">
+        <div style="margin-bottom: 24px;">
+            <a href="seller-dashboard.html" class="text-muted" style="font-size: 0.9rem;">← Back to Seller Dashboard</a>
+            <h1 style="font-size: 2rem; margin-top: 8px;">List a New Product</h1>
+            <p class="text-muted">Enter product details to make it available in the marketplace</p>
+        </div>
+
+        <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 30px;">
+            <!-- Form Card -->
+            <div class="table-card">
+                <form id="add-product-form" onsubmit="event.preventDefault(); submitNewProduct();">
+                    <div class="form-group">
+                        <label class="form-label" for="prod-name">Product Name *</label>
+                        <input type="text" id="prod-name" class="form-control" placeholder="e.g. Wireless Bluetooth Earbuds" required oninput="updateLivePreview()">
+                    </div>
+
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+                        <div class="form-group">
+                            <label class="form-label" for="prod-category">Category *</label>
+                            <select id="prod-category" class="form-control" required onchange="updateLivePreview()">
+                                <option value="Electronics">Electronics</option>
+                                <option value="Fashion">Fashion</option>
+                                <option value="Accessories">Accessories</option>
+                                <option value="Home">Home</option>
+                                <option value="Beauty">Beauty</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="prod-price">Price (₹) *</label>
+                            <input type="number" id="prod-price" class="form-control" min="1" step="0.01" placeholder="e.g. 1499" required oninput="updateLivePreview()">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label" for="prod-qty">Available Stock / Quantity *</label>
+                        <input type="number" id="prod-qty" class="form-control" min="0" placeholder="e.g. 25" required oninput="updateLivePreview()">
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label" for="prod-img">Product Image URL</label>
+                        <input type="url" id="prod-img" class="form-control" placeholder="https://images.unsplash.com/..." oninput="updateLivePreview()">
+                        <small class="text-muted">Leave empty to use high-quality default product image.</small>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label" for="prod-desc">Product Description</label>
+                        <textarea id="prod-desc" class="form-control" rows="4" placeholder="Describe features, specifications, and warranty..." oninput="updateLivePreview()"></textarea>
+                    </div>
+
+                    <div style="display: flex; gap: 12px; margin-top: 24px;">
+                        <button type="submit" id="add-prod-btn" class="btn btn-primary btn-lg">Publish Product 🚀</button>
+                        <a href="seller-dashboard.html" class="btn btn-secondary btn-lg">Cancel</a>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Live Card Preview -->
+            <div>
+                <h3 style="margin-bottom: 12px; font-size: 1.1rem;">Live Marketplace Card Preview:</h3>
+                <div class="product-card" style="box-shadow: var(--shadow-md);">
+                    <div class="product-image-container">
+                        <span class="product-category-tag" id="preview-category">Electronics</span>
+                        <img id="preview-img" src="https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=600" class="product-image" alt="Preview">
+                    </div>
+                    <div class="product-card-body">
+                        <div class="product-seller">Seller: <strong>You</strong></div>
+                        <h3 class="product-title" id="preview-title">Sample Product Title</h3>
+                        <div class="product-rating">★ 5.0 <span>(New)</span></div>
+                        <div class="product-price-row">
+                            <div class="product-price" id="preview-price">₹1,499</div>
+                            <div class="product-stock" id="preview-stock">25 available</div>
+                        </div>
+                        <button class="btn btn-primary btn-block" disabled>🛒 Add to Cart</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="site-footer">
+        <div class="container footer-inner">
+            <div>
+                <strong style="color: var(--primary);">MONICA MART</strong> — Multi-Seller E-Commerce Marketplace
+                <p style="font-size: 0.82rem; margin-top: 4px;">Developer: Monica Sornam | College Capstone Project</p>
+            </div>
+            <div>&copy; 2026 MONICA MART. All rights reserved.</div>
+        </div>
+    </footer>
+
+    <script src="js/app.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const user = AppState.getUser();
+            if (!user || user.role !== 'SELLER') {
+                showToast('Only sellers can access the Add Product page.', 'error');
+                setTimeout(() => window.location.href = 'login.html', 1000);
+            }
+        });
+
+        function updateLivePreview() {
+            const name = document.getElementById('prod-name').value.trim();
+            const cat = document.getElementById('prod-category').value;
+            const price = document.getElementById('prod-price').value;
+            const qty = document.getElementById('prod-qty').value;
+            const img = document.getElementById('prod-img').value.trim();
+
+            document.getElementById('preview-title').textContent = name || 'Sample Product Title';
+            document.getElementById('preview-category').textContent = cat;
+            document.getElementById('preview-price').textContent = price ? formatPrice(price) : '₹1,499';
+            document.getElementById('preview-stock').textContent = qty ? `${qty} available` : '25 available';
+            if (img) {
+                document.getElementById('preview-img').src = img;
+            }
+        }
+
+        async function submitNewProduct() {
+            const name = document.getElementById('prod-name').value.trim();
+            const category = document.getElementById('prod-category').value;
+            const price = parseFloat(document.getElementById('prod-price').value);
+            const quantity = parseInt(document.getElementById('prod-qty').value);
+            const image = document.getElementById('prod-img').value.trim() || 'https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=600';
+            const description = document.getElementById('prod-desc').value.trim();
+
+            const btn = document.getElementById('add-prod-btn');
+            btn.disabled = true;
+            btn.textContent = 'Saving Product...';
+
+            const res = await apiRequest('/products', 'POST', {
+                product_name: name,
+                category,
+                price,
+                quantity,
+                image,
+                description
+            });
+
+            if (res.ok && res.data.success) {
+                showToast('Product added successfully! Redirecting...', 'success');
+                setTimeout(() => {
+                    window.location.href = 'seller-dashboard.html';
+                }, 1200);
+            } else {
+                showToast(res.data.message || 'Failed to add product.', 'error');
+                btn.disabled = false;
+                btn.textContent = 'Publish Product 🚀';
+            }
+        }
+    </script>
+</body>
+</html>

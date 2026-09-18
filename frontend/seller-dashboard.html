@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Seller Dashboard — MONICA MART</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+    <!-- Header -->
+    <header class="site-header">
+        <div class="container header-inner">
+            <a href="index.html" class="logo">
+                <div class="logo-icon">M</div>
+                MONICA <span>MART</span>
+            </a>
+            <button class="mobile-nav-toggle" id="mobile-nav-toggle">☰</button>
+            <ul class="nav-links" id="main-nav"></ul>
+        </div>
+    </header>
+
+    <main class="container" style="margin-top: 24px; margin-bottom: 60px;">
+        <!-- Dashboard Welcome Banner -->
+        <div class="dashboard-header">
+            <div>
+                <span class="badge badge-purple" style="margin-bottom: 6px;">Seller Portal</span>
+                <h1 style="font-size: 1.8rem;" id="seller-welcome-title">Welcome, Seller</h1>
+                <p class="text-muted">Manage your marketplace inventory, listings, and customer orders</p>
+            </div>
+            <div style="display: flex; gap: 10px;">
+                <a href="add-product.html" class="btn btn-primary">+ Add New Product</a>
+                <a href="javascript:void(0)" onclick="handleLogout()" class="btn btn-secondary">Logout</a>
+            </div>
+        </div>
+
+        <!-- Metrics Overview -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-label">Active Products</div>
+                <div class="stat-number" id="stat-products-count">0</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">Units Sold</div>
+                <div class="stat-number" id="stat-units-sold">0</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">Total Sales Revenue</div>
+                <div class="stat-number" id="stat-revenue" style="color: var(--success);">₹0</div>
+            </div>
+        </div>
+
+        <!-- Navigation Tabs -->
+        <div class="dashboard-tabs">
+            <button class="tab-btn active" onclick="switchTab('products')">📦 My Products</button>
+            <button class="tab-btn" onclick="switchTab('orders')">📋 Orders Related to My Products</button>
+        </div>
+
+        <!-- Products Section -->
+        <div id="tab-products-content">
+            <div class="table-card">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+                    <h3 style="font-size: 1.2rem;">Inventory Management</h3>
+                    <a href="add-product.html" class="btn btn-sm btn-primary">+ Add Product</a>
+                </div>
+
+                <div style="overflow-x: auto;">
+                    <table class="cart-table" id="seller-products-table">
+                        <thead>
+                            <tr>
+                                <th>Product</th>
+                                <th>Category</th>
+                                <th>Price</th>
+                                <th>Stock</th>
+                                <th>Rating</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="seller-products-tbody">
+                            <tr><td colspan="6" class="text-center" style="padding: 30px;">Loading inventory...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Orders Section -->
+        <div id="tab-orders-content" style="display: none;">
+            <div class="table-card">
+                <h3 style="font-size: 1.2rem; margin-bottom: 16px;">Customer Orders for Your Products</h3>
+                <div style="overflow-x: auto;">
+                    <table class="cart-table">
+                        <thead>
+                            <tr>
+                                <th>Order #</th>
+                                <th>Product</th>
+                                <th>Quantity</th>
+                                <th>Price Each</th>
+                                <th>Line Total</th>
+                                <th>Status</th>
+                                <th>Buyer Info</th>
+                            </tr>
+                        </thead>
+                        <tbody id="seller-orders-tbody">
+                            <tr><td colspan="7" class="text-center" style="padding: 30px;">Loading customer orders...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="site-footer">
+        <div class="container footer-inner">
+            <div>
+                <strong style="color: var(--primary);">MONICA MART</strong> — Multi-Seller E-Commerce Marketplace
+                <p style="font-size: 0.82rem; margin-top: 4px;">Developer: Monica Sornam | College Capstone Project</p>
+            </div>
+            <div>&copy; 2026 MONICA MART. All rights reserved.</div>
+        </div>
+    </footer>
+
+    <script src="js/app.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const user = AppState.getUser();
+            if (!user || user.role !== 'SELLER') {
+                showToast('Access restricted to Seller accounts.', 'error');
+                setTimeout(() => window.location.href = 'login.html', 1000);
+                return;
+            }
+
+            document.getElementById('seller-welcome-title').textContent = `Welcome, ${user.name}`;
+            loadSellerData();
+        });
+
+        function switchTab(tab) {
+            document.querySelectorAll('.tab-btn').forEach((btn, idx) => {
+                btn.classList.toggle('active', (tab === 'products' && idx === 0) || (tab === 'orders' && idx === 1));
+            });
+            document.getElementById('tab-products-content').style.display = tab === 'products' ? 'block' : 'none';
+            document.getElementById('tab-orders-content').style.display = tab === 'orders' ? 'block' : 'none';
+        }
+
+        async function loadSellerData() {
+            // 1. Fetch Seller Products
+            const pRes = await apiRequest('/seller/products');
+            if (pRes.ok && pRes.data.success) {
+                const products = pRes.data.products || [];
+                document.getElementById('stat-products-count').textContent = products.length;
+
+                const tbody = document.getElementById('seller-products-tbody');
+                if (products.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="6" class="text-center" style="padding: 30px;">No products added yet. Click "+ Add Product" above!</td></tr>';
+                } else {
+                    tbody.innerHTML = products.map(p => `
+                        <tr>
+                            <td>
+                                <div class="cart-item-info">
+                                    <img src="${p.image || 'https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=600'}" class="cart-item-img">
+                                    <div>
+                                        <strong>${p.product_name}</strong>
+                                        <div class="text-muted" style="font-size: 0.8rem;">ID: #${p.product_id}</div>
+                                    </div>
+                                </div>
+                            </td>
+                            <td><span class="badge badge-purple">${p.category}</span></td>
+                            <td class="bold">${formatPrice(p.price)}</td>
+                            <td>
+                                <span class="badge ${p.quantity > 0 ? 'badge-success' : 'badge-danger'}">
+                                    ${p.quantity} units
+                                </span>
+                            </td>
+                            <td>★ ${p.rating > 0 ? p.rating : '5.0'} (${p.review_count})</td>
+                            <td>
+                                <div style="display: flex; gap: 8px;">
+                                    <a href="edit-product.html?id=${p.product_id}" class="btn btn-sm btn-outline">Edit</a>
+                                    <button class="btn btn-sm btn-danger" onclick="confirmDeleteProduct(${p.product_id}, '${p.product_name.replace(/'/g, "\\'")}')">Delete</button>
+                                </div>
+                            </td>
+                        </tr>
+                    `).join('');
+                }
+            }
+
+            // 2. Fetch Seller Orders
+            const oRes = await apiRequest('/seller/orders');
+            if (oRes.ok && oRes.data.success) {
+                const orders = oRes.data.orders || [];
+                document.getElementById('stat-units-sold').textContent = oRes.data.total_units_sold || 0;
+                document.getElementById('stat-revenue').textContent = formatPrice(oRes.data.total_revenue || 0);
+
+                const oTbody = document.getElementById('seller-orders-tbody');
+                if (orders.length === 0) {
+                    oTbody.innerHTML = '<tr><td colspan="7" class="text-center" style="padding: 30px;">No orders received yet for your products.</td></tr>';
+                } else {
+                    oTbody.innerHTML = orders.map(ord => `
+                        <tr>
+                            <td class="bold">#${ord.order_id}</td>
+                            <td>
+                                <div class="cart-item-info">
+                                    <img src="${ord.image || 'https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=600'}" class="cart-item-img" style="width: 40px; height: 40px;">
+                                    <span>${ord.product_name}</span>
+                                </div>
+                            </td>
+                            <td class="bold">${ord.quantity}</td>
+                            <td>${formatPrice(ord.price_per_unit)}</td>
+                            <td class="bold" style="color: var(--primary);">${formatPrice(ord.line_total)}</td>
+                            <td><span class="badge badge-warning">${ord.order_status}</span></td>
+                            <td style="font-size: 0.85rem;">
+                                <strong>${ord.buyer_name}</strong><br>
+                                <span class="text-muted">${ord.shipping_address || 'Chennai, India'}</span>
+                            </td>
+                        </tr>
+                    `).join('');
+                }
+            }
+        }
+
+        async function confirmDeleteProduct(id, name) {
+            if (!confirm(`Are you sure you want to delete "${name}"? This action cannot be undone.`)) {
+                return;
+            }
+
+            const res = await apiRequest(`/products/${id}`, 'DELETE');
+            if (res.ok && res.data.success) {
+                showToast(res.data.message || 'Product deleted successfully.', 'success');
+                loadSellerData();
+            } else {
+                showToast(res.data.message || 'Failed to delete product.', 'error');
+            }
+        }
+    </script>
+</body>
+</html>

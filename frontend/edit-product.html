@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit Product — MONICA MART</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+    <!-- Header -->
+    <header class="site-header">
+        <div class="container header-inner">
+            <a href="index.html" class="logo">
+                <div class="logo-icon">M</div>
+                MONICA <span>MART</span>
+            </a>
+            <button class="mobile-nav-toggle" id="mobile-nav-toggle">☰</button>
+            <ul class="nav-links" id="main-nav"></ul>
+        </div>
+    </header>
+
+    <main class="container" style="margin-top: 30px; margin-bottom: 60px;">
+        <div style="margin-bottom: 24px;">
+            <a href="seller-dashboard.html" class="text-muted" style="font-size: 0.9rem;">← Back to Seller Dashboard</a>
+            <h1 style="font-size: 2rem; margin-top: 8px;">Edit Product Listing</h1>
+            <p class="text-muted">Modify your existing product details, price, or inventory count</p>
+        </div>
+
+        <div class="auth-wrapper" style="max-width: 650px;">
+            <div class="table-card" id="edit-product-card">
+                <div style="text-align: center; padding: 40px;">
+                    <p class="text-muted">Loading product details...</p>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="site-footer">
+        <div class="container footer-inner">
+            <div>
+                <strong style="color: var(--primary);">MONICA MART</strong> — Multi-Seller E-Commerce Marketplace
+                <p style="font-size: 0.82rem; margin-top: 4px;">Developer: Monica Sornam | College Capstone Project</p>
+            </div>
+            <div>&copy; 2026 MONICA MART. All rights reserved.</div>
+        </div>
+    </footer>
+
+    <script src="js/app.js"></script>
+    <script>
+        let productId = null;
+
+        document.addEventListener('DOMContentLoaded', async () => {
+            const user = AppState.getUser();
+            if (!user || user.role !== 'SELLER') {
+                showToast('Access restricted to sellers.', 'error');
+                setTimeout(() => window.location.href = 'login.html', 1000);
+                return;
+            }
+
+            const urlParams = new URLSearchParams(window.location.search);
+            productId = urlParams.get('id');
+
+            if (!productId) {
+                document.getElementById('edit-product-card').innerHTML = '<p class="text-center">No product specified.</p>';
+                return;
+            }
+
+            const res = await apiRequest(`/products/${productId}`);
+            if (!res.ok || !res.data.success) {
+                document.getElementById('edit-product-card').innerHTML = '<p class="text-center" style="color: red;">Product not found or unavailable.</p>';
+                return;
+            }
+
+            const p = res.data.product;
+
+            // Enforce ownership check on frontend as well
+            if (p.seller_id !== user.id) {
+                document.getElementById('edit-product-card').innerHTML = `
+                    <div class="text-center" style="padding: 30px;">
+                        <h3 style="color: var(--danger);">Unauthorized</h3>
+                        <p class="text-muted" style="margin: 8px 0 16px 0;">You can only edit products belonging to your seller account.</p>
+                        <a href="seller-dashboard.html" class="btn btn-primary">Back to Dashboard</a>
+                    </div>
+                `;
+                return;
+            }
+
+            document.getElementById('edit-product-card').innerHTML = `
+                <form onsubmit="event.preventDefault(); handleUpdateProduct();">
+                    <div class="form-group">
+                        <label class="form-label">Product Name *</label>
+                        <input type="text" id="edit-name" class="form-control" value="${p.product_name}" required>
+                    </div>
+
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+                        <div class="form-group">
+                            <label class="form-label">Category *</label>
+                            <select id="edit-category" class="form-control" required>
+                                <option value="Electronics" ${p.category === 'Electronics' ? 'selected' : ''}>Electronics</option>
+                                <option value="Fashion" ${p.category === 'Fashion' ? 'selected' : ''}>Fashion</option>
+                                <option value="Accessories" ${p.category === 'Accessories' ? 'selected' : ''}>Accessories</option>
+                                <option value="Home" ${p.category === 'Home' ? 'selected' : ''}>Home</option>
+                                <option value="Beauty" ${p.category === 'Beauty' ? 'selected' : ''}>Beauty</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Price (₹) *</label>
+                            <input type="number" id="edit-price" class="form-control" min="1" step="0.01" value="${p.price}" required>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Available Stock / Quantity *</label>
+                        <input type="number" id="edit-qty" class="form-control" min="0" value="${p.quantity}" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Image URL</label>
+                        <input type="url" id="edit-img" class="form-control" value="${p.image || ''}">
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Product Description</label>
+                        <textarea id="edit-desc" class="form-control" rows="4">${p.description || ''}</textarea>
+                    </div>
+
+                    <div style="display: flex; gap: 12px; margin-top: 24px;">
+                        <button type="submit" id="edit-submit-btn" class="btn btn-primary btn-lg">Save Changes</button>
+                        <a href="seller-dashboard.html" class="btn btn-secondary btn-lg">Cancel</a>
+                    </div>
+                </form>
+            `;
+        });
+
+        async function handleUpdateProduct() {
+            const name = document.getElementById('edit-name').value.trim();
+            const category = document.getElementById('edit-category').value;
+            const price = parseFloat(document.getElementById('edit-price').value);
+            const quantity = parseInt(document.getElementById('edit-qty').value);
+            const image = document.getElementById('edit-img').value.trim();
+            const description = document.getElementById('edit-desc').value.trim();
+            const btn = document.getElementById('edit-submit-btn');
+
+            btn.disabled = true;
+            btn.textContent = 'Saving...';
+
+            const res = await apiRequest(`/products/${productId}`, 'PUT', {
+                product_name: name,
+                category,
+                price,
+                quantity,
+                image,
+                description
+            });
+
+            if (res.ok && res.data.success) {
+                showToast('Product updated successfully!', 'success');
+                setTimeout(() => {
+                    window.location.href = 'seller-dashboard.html';
+                }, 1000);
+            } else {
+                showToast(res.data.message || 'Failed to update product.', 'error');
+                btn.disabled = false;
+                btn.textContent = 'Save Changes';
+            }
+        }
+    </script>
+</body>
+</html>
