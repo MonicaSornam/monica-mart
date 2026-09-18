@@ -1,0 +1,10 @@
+.git
+.gitignore
+build/
+bin/
+*.db
+*.db-journal
+*.db-wal
+.vscode/
+.idea/
+drogon.log

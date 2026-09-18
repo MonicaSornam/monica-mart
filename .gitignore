@@ -1,0 +1,38 @@
+# Build directories
+build/
+bin/
+out/
+cmake-build-*/
+
+# Compiled Object files, libraries, executables
+*.o
+*.obj
+*.exe
+*.dll
+*.so
+*.dylib
+*.a
+*.lib
+
+# SQLite database files created at runtime
+*.db
+*.db-journal
+*.db-wal
+*.sqlite
+*.sqlite3
+
+# Drogon temporary files and logs
+drogon.log
+*.log
+
+# IDE & Editor files
+.vscode/
+.vs/
+.idea/
+*.sublime-project
+*.sublime-workspace
+
+# OS generated files
+.DS_Store
+Thumbs.db
+desktop.ini
