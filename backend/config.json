@@ -1,0 +1,43 @@
+{
+  "listeners": [
+    {
+      "address": "0.0.0.0",
+      "port": 8080,
+      "https": false
+    }
+  ],
+  "db_clients": [],
+  "app": {
+    "threads_num": 4,
+    "enable_session": true,
+    "session_timeout": 7200,
+    "document_root": "./frontend",
+    "home_page": "index.html",
+    "static_file_headers": [],
+    "upload_path": "./uploads",
+    "file_types": [
+      "html",
+      "js",
+      "css",
+      "png",
+      "jpg",
+      "jpeg",
+      "gif",
+      "svg",
+      "ico",
+      "woff",
+      "woff2",
+      "ttf"
+    ],
+    "max_connections": 100000,
+    "max_connections_per_ip": 0,
+    "load_dynamic_views": false,
+    "dynamic_views_path": ["./views"],
+    "log": {
+      "log_path": "./logs",
+      "logfile_base_name": "monicamart",
+      "log_size_limit": 10000000,
+      "log_level": "DEBUG"
+    }
+  }
+}
