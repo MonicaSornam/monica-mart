@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Seller Dashboard — MONICA MART</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+    <!-- Header Navigation -->
+    <header class="site-header">
+        <div class="container header-inner">
+            <a href="index.html" class="logo">
+                <span class="logo-accent">🌸</span>
+                MONICA <span>MART</span>
+            </a>
+            <button class="mobile-nav-toggle" id="mobile-nav-toggle" aria-label="Toggle navigation">☰</button>
+            <ul class="nav-links" id="main-nav">
+                <!-- Injected dynamically by main.js -->
+            </ul>
+        </div>
+    </header>
+
+    <main class="container" style="padding-top: 32px;" id="seller-dashboard-container">
+        <!-- Welcome Banner -->
+        <div style="background: linear-gradient(135deg, var(--lavender-subtle) 0%, var(--dusty-rose-light) 100%); border: 1.5px solid var(--border); border-radius: var(--radius); padding: 24px 30px; margin-bottom: 28px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px;">
+            <div>
+                <span class="badge badge-rose" style="margin-bottom: 6px;">Merchant Portal</span>
+                <h1 style="font-size: 1.8rem; color: var(--lavender-dark);">
+                    Welcome, <span id="seller-welcome-name">Seller</span>!
+                </h1>
+                <p style="color: var(--text-muted); font-size: 0.95rem;">
+                    Manage your storefront inventory, track sales orders, and update stock in real time.
+                </p>
+            </div>
+            <button class="btn btn-primary btn-lg" id="open-add-product-btn">
+                + Add Product
+            </button>
+        </div>
+
+        <!-- Metrics Cards -->
+        <div class="dashboard-stats">
+            <div class="stat-card">
+                <div class="stat-icon">📦</div>
+                <div class="stat-content">
+                    <h4>Total Products</h4>
+                    <div class="stat-value" id="stat-total-products">0</div>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">🛍️</div>
+                <div class="stat-content">
+                    <h4>Total Orders</h4>
+                    <div class="stat-value" id="stat-total-orders">0</div>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">💰</div>
+                <div class="stat-content">
+                    <h4>Total Revenue</h4>
+                    <div class="stat-value" id="stat-total-revenue">₹0</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Inventory Table -->
+        <section class="data-card" style="margin-bottom: 40px;">
+            <div class="section-header">
+                <div>
+                    <h2>Your Product Catalog</h2>
+                    <p>Manage and update your active marketplace listings</p>
+                </div>
+            </div>
+
+            <div class="table-responsive">
+                <table class="custom-table">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Product</th>
+                            <th>Category</th>
+                            <th>Price</th>
+                            <th>Stock</th>
+                            <th>Rating</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="seller-products-table-body">
+                        <tr><td colspan="7" class="text-center text-muted" style="padding: 30px;">Loading your inventory...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- Seller Orders Table -->
+        <section class="data-card" id="seller-orders-tab" style="margin-bottom: 60px;">
+            <div class="section-header">
+                <div>
+                    <h2>Customer Purchase Orders</h2>
+                    <p>Orders containing your products with status fulfillment</p>
+                </div>
+            </div>
+
+            <div class="table-responsive">
+                <table class="custom-table">
+                    <thead>
+                        <tr>
+                            <th>Order ID</th>
+                            <th>Item Purchased</th>
+                            <th>Customer</th>
+                            <th>Quantity</th>
+                            <th>Line Total</th>
+                            <th>Status</th>
+                            <th>Update Status</th>
+                        </tr>
+                    </thead>
+                    <tbody id="seller-orders-table-body">
+                        <tr><td colspan="7" class="text-center text-muted" style="padding: 30px;">Loading orders...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+    </main>
+
+    <!-- Add / Edit Product Modal Dialog -->
+    <div class="modal-backdrop" id="product-modal">
+        <div class="modal-card">
+            <div class="modal-header">
+                <h3 id="modal-title">Add New Product</h3>
+                <button class="modal-close" id="close-product-modal-btn">&times;</button>
+            </div>
+
+            <form id="product-form">
+                <div class="form-group">
+                    <label for="prod-name">Product Name *</label>
+                    <input type="text" id="prod-name" class="form-control" placeholder="e.g. Laptop Pro 15 Slim" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="prod-category">Category *</label>
+                    <select id="prod-category" class="form-control" required>
+                        <option value="" disabled selected>Select category</option>
+                        <option value="Electronics">Electronics</option>
+                        <option value="Fashion">Fashion</option>
+                        <option value="Home">Home</option>
+                        <option value="Beauty">Beauty</option>
+                        <option value="Accessories">Accessories</option>
+                    </select>
+                </div>
+
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+                    <div class="form-group">
+                        <label for="prod-price">Price (₹) *</label>
+                        <input type="number" id="prod-price" class="form-control" step="0.01" min="0" placeholder="e.g. 45000" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="prod-stock">Stock Quantity *</label>
+                        <input type="number" id="prod-stock" class="form-control" min="0" placeholder="e.g. 15" required>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="prod-image">Image URL</label>
+                    <input type="url" id="prod-image" class="form-control" placeholder="https://images.unsplash.com/...">
+                </div>
+
+                <div class="form-group">
+                    <label for="prod-desc">Product Description</label>
+                    <textarea id="prod-desc" class="form-control" rows="3" placeholder="Describe product specifications, features, and warranty details..."></textarea>
+                </div>
+
+                <div style="display: flex; gap: 12px; margin-top: 24px;">
+                    <button type="submit" class="btn btn-primary" style="flex: 1;">
+                        Save Product 💾
+                    </button>
+                    <button type="button" class="btn btn-outline" onclick="document.getElementById('product-modal').classList.remove('active')">
+                        Cancel
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="site-footer">
+        <div class="container footer-inner">
+            <div>
+                <strong style="color: var(--lavender-dark);">MONICA MART</strong> — College Capstone Project by Monica Sornam
+            </div>
+            <div>
+                <span style="color: var(--text-muted);">&copy; 2026 MONICA MART. All rights reserved.</span>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="js/main.js"></script>
+    <script src="js/seller.js"></script>
+    <script src="js/chatbot.js"></script>
+</body>
+</html>

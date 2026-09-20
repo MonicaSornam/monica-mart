@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Administrator Dashboard — MONICA MART</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+    <!-- Header Navigation -->
+    <header class="site-header">
+        <div class="container header-inner">
+            <a href="index.html" class="logo">
+                <span class="logo-accent">🌸</span>
+                MONICA <span>MART</span>
+            </a>
+            <button class="mobile-nav-toggle" id="mobile-nav-toggle" aria-label="Toggle navigation">☰</button>
+            <ul class="nav-links" id="main-nav">
+                <!-- Injected dynamically by main.js -->
+            </ul>
+        </div>
+    </header>
+
+    <main class="container" style="padding-top: 32px;" id="admin-dashboard-container">
+        <!-- Admin Title Banner -->
+        <div style="background: linear-gradient(135deg, var(--lavender-subtle) 0%, var(--peach-light) 100%); border: 1.5px solid var(--border); border-radius: var(--radius); padding: 24px 30px; margin-bottom: 28px;">
+            <span class="badge badge-cancelled" style="margin-bottom: 6px;">Platform Administrator</span>
+            <h1 style="font-size: 1.8rem; color: var(--lavender-dark);">Marketplace Governance & Audit</h1>
+            <p style="color: var(--text-muted); font-size: 0.95rem;">
+                Platform-wide control over registered users, product catalog moderation, and transaction logs.
+            </p>
+        </div>
+
+        <!-- Metrics Cards -->
+        <div class="dashboard-stats">
+            <div class="stat-card">
+                <div class="stat-icon">👥</div>
+                <div class="stat-content">
+                    <h4>Total Users</h4>
+                    <div class="stat-value" id="stat-admin-users">0</div>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">📦</div>
+                <div class="stat-content">
+                    <h4>Total Products</h4>
+                    <div class="stat-value" id="stat-admin-products">0</div>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">🛍️</div>
+                <div class="stat-content">
+                    <h4>Total Orders</h4>
+                    <div class="stat-value" id="stat-admin-orders">0</div>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">📈</div>
+                <div class="stat-content">
+                    <h4>Platform Volume</h4>
+                    <div class="stat-value" id="stat-admin-volume">₹0</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Registered Users Table -->
+        <section class="data-card" style="margin-bottom: 40px;">
+            <div class="section-header">
+                <div>
+                    <h2>Registered Users</h2>
+                    <p>Buyers, verified sellers, and platform administrators</p>
+                </div>
+            </div>
+
+            <div class="table-responsive">
+                <table class="custom-table">
+                    <thead>
+                        <tr>
+                            <th>User ID</th>
+                            <th>Name</th>
+                            <th>Email</th>
+                            <th>Role</th>
+                            <th>Joined Date</th>
+                        </tr>
+                    </thead>
+                    <tbody id="admin-users-table-body">
+                        <tr><td colspan="5" class="text-center text-muted" style="padding: 24px;">Loading users...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- Product Catalog Moderation Table -->
+        <section class="data-card" style="margin-bottom: 40px;">
+            <div class="section-header">
+                <div>
+                    <h2>Product Moderation</h2>
+                    <p>Audit and remove inappropriate marketplace listings with safety confirmation</p>
+                </div>
+            </div>
+
+            <div class="table-responsive">
+                <table class="custom-table">
+                    <thead>
+                        <tr>
+                            <th>Product ID</th>
+                            <th>Product Name</th>
+                            <th>Category</th>
+                            <th>Seller</th>
+                            <th>Price</th>
+                            <th>Stock</th>
+                            <th>Moderation</th>
+                        </tr>
+                    </thead>
+                    <tbody id="admin-products-table-body">
+                        <tr><td colspan="7" class="text-center text-muted" style="padding: 24px;">Loading products...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- Platform Orders Audit Table -->
+        <section class="data-card" style="margin-bottom: 60px;">
+            <div class="section-header">
+                <div>
+                    <h2>Platform Orders Audit</h2>
+                    <p>Comprehensive transaction log of all completed purchases</p>
+                </div>
+            </div>
+
+            <div class="table-responsive">
+                <table class="custom-table">
+                    <thead>
+                        <tr>
+                            <th>Order ID</th>
+                            <th>Customer</th>
+                            <th>Date</th>
+                            <th>Items</th>
+                            <th>Total Amount</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody id="admin-orders-table-body">
+                        <tr><td colspan="6" class="text-center text-muted" style="padding: 24px;">Loading orders...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+    </main>
+
+    <!-- Product Removal Confirmation Modal -->
+    <div class="modal-backdrop" id="admin-delete-modal">
+        <div class="modal-card" style="max-width: 480px;">
+            <div class="modal-header">
+                <h3 style="color: var(--status-cancelled);">⚠️ Remove Inappropriate Product</h3>
+                <button class="modal-close" id="admin-cancel-delete-btn">&times;</button>
+            </div>
+
+            <p style="color: var(--text-main); font-size: 0.95rem; margin-bottom: 16px;">
+                Are you sure you want to remove the listing <strong id="delete-prod-name">Product</strong> from the marketplace?
+            </p>
+            <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 24px;">
+                This product will be permanently removed from the public catalog and cart databases. This action cannot be undone.
+            </p>
+
+            <div style="display: flex; gap: 12px;">
+                <button type="button" class="btn btn-danger" id="admin-confirm-delete-btn" style="flex: 1;">
+                    Yes, Remove Listing
+                </button>
+                <button type="button" class="btn btn-outline" onclick="document.getElementById('admin-delete-modal').classList.remove('active')">
+                    Cancel
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="site-footer">
+        <div class="container footer-inner">
+            <div>
+                <strong style="color: var(--lavender-dark);">MONICA MART</strong> — College Capstone Project by Monica Sornam
+            </div>
+            <div>
+                <span style="color: var(--text-muted);">&copy; 2026 MONICA MART. All rights reserved.</span>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="js/main.js"></script>
+    <script src="js/admin.js"></script>
+    <script src="js/chatbot.js"></script>
+</body>
+</html>

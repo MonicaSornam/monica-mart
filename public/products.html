@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Products Catalog — MONICA MART</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+    <!-- Header Navigation -->
+    <header class="site-header">
+        <div class="container header-inner">
+            <a href="index.html" class="logo">
+                <span class="logo-accent">🌸</span>
+                MONICA <span>MART</span>
+            </a>
+            <button class="mobile-nav-toggle" id="mobile-nav-toggle" aria-label="Toggle navigation">☰</button>
+            <ul class="nav-links" id="main-nav">
+                <!-- Injected dynamically by main.js -->
+            </ul>
+        </div>
+    </header>
+
+    <main class="container" style="padding-top: 32px;">
+        <div class="section-header">
+            <div>
+                <h1>Marketplace Catalog</h1>
+                <p>Browse products from our community of verified independent sellers</p>
+            </div>
+        </div>
+
+        <!-- Filter & Search Controls -->
+        <div class="filter-bar">
+            <!-- Search Bar -->
+            <div class="search-box">
+                <span class="search-icon">🔍</span>
+                <input type="text" id="search-input" class="form-control" placeholder="Search by product name (e.g. Laptop, Watch)...">
+            </div>
+
+            <!-- Category Pills -->
+            <div class="category-pills">
+                <button class="category-pill active" data-category="">All</button>
+                <button class="category-pill" data-category="Electronics">Electronics</button>
+                <button class="category-pill" data-category="Fashion">Fashion</button>
+                <button class="category-pill" data-category="Home">Home</button>
+                <button class="category-pill" data-category="Beauty">Beauty</button>
+                <button class="category-pill" data-category="Accessories">Accessories</button>
+            </div>
+
+            <!-- Sort Dropdown -->
+            <div>
+                <select id="sort-select" class="form-control" style="width: auto; padding-right: 28px;">
+                    <option value="default">Sort by: Featured</option>
+                    <option value="price-asc">Price: Low to High</option>
+                    <option value="price-desc">Price: High to Low</option>
+                    <option value="rating-desc">Highest Rated</option>
+                </select>
+            </div>
+        </div>
+
+        <!-- Dynamic Products Grid -->
+        <div class="products-grid" id="products-grid">
+            <div style="grid-column: 1/-1; text-align: center; padding: 40px;">
+                <p class="text-muted">Loading products from C++ Drogon server...</p>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="site-footer">
+        <div class="container footer-inner">
+            <div>
+                <strong style="color: var(--lavender-dark);">MONICA MART</strong> — College Capstone Project by Monica Sornam
+            </div>
+            <div>
+                <span style="color: var(--text-muted);">&copy; 2026 MONICA MART. All rights reserved.</span>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="js/main.js"></script>
+    <script src="js/products.js"></script>
+    <script src="js/chatbot.js"></script>
+</body>
+</html>

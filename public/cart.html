@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shopping Cart — MONICA MART</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+    <!-- Header Navigation -->
+    <header class="site-header">
+        <div class="container header-inner">
+            <a href="index.html" class="logo">
+                <span class="logo-accent">🌸</span>
+                MONICA <span>MART</span>
+            </a>
+            <button class="mobile-nav-toggle" id="mobile-nav-toggle" aria-label="Toggle navigation">☰</button>
+            <ul class="nav-links" id="main-nav">
+                <!-- Injected dynamically by main.js -->
+            </ul>
+        </div>
+    </header>
+
+    <main class="container" style="padding-top: 32px;">
+        <div class="section-header">
+            <div>
+                <h1>Your Shopping Cart</h1>
+                <p>Review selected items and proceed to secure checkout</p>
+            </div>
+            <a href="products.html" class="btn btn-sm btn-outline">&larr; Continue Shopping</a>
+        </div>
+
+        <!-- Dynamic Cart Container -->
+        <div id="cart-container">
+            <div style="text-align: center; padding: 50px;">
+                <p class="text-muted">Loading your shopping cart...</p>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="site-footer">
+        <div class="container footer-inner">
+            <div>
+                <strong style="color: var(--lavender-dark);">MONICA MART</strong> — College Capstone Project by Monica Sornam
+            </div>
+            <div>
+                <span style="color: var(--text-muted);">&copy; 2026 MONICA MART. All rights reserved.</span>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="js/main.js"></script>
+    <script src="js/cart.js"></script>
+    <script src="js/chatbot.js"></script>
+</body>
+</html>

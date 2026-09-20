@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Product Details — MONICA MART</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+    <!-- Header Navigation -->
+    <header class="site-header">
+        <div class="container header-inner">
+            <a href="index.html" class="logo">
+                <span class="logo-accent">🌸</span>
+                MONICA <span>MART</span>
+            </a>
+            <button class="mobile-nav-toggle" id="mobile-nav-toggle" aria-label="Toggle navigation">☰</button>
+            <ul class="nav-links" id="main-nav">
+                <!-- Injected dynamically by main.js -->
+            </ul>
+        </div>
+    </header>
+
+    <main class="container" style="padding-top: 32px;" id="product-detail-container">
+        <!-- Breadcrumb Link -->
+        <div style="margin-bottom: 20px;">
+            <a href="products.html" style="color: var(--text-muted); font-size: 0.9rem;">&larr; Back to Products Catalog</a>
+        </div>
+
+        <!-- Product Details Card -->
+        <div class="product-detail-layout">
+            <div class="product-detail-image" id="detail-img-container">
+                <!-- Injected by products.js -->
+            </div>
+
+            <div class="product-detail-info">
+                <div class="product-meta-row">
+                    <span class="badge badge-rose" id="detail-category">Category</span>
+                    <span style="font-size: 0.85rem; color: var(--text-muted);">
+                        Sold by: <strong id="detail-seller" style="color: var(--lavender-dark);">Seller</strong>
+                    </span>
+                </div>
+
+                <h1 id="detail-title">Product Name</h1>
+
+                <div class="product-detail-price" id="detail-price">₹0</div>
+
+                <div id="detail-stock" style="margin-bottom: 18px;">
+                    <!-- Stock badge -->
+                </div>
+
+                <p class="product-detail-desc" id="detail-desc">
+                    Product description...
+                </p>
+
+                <!-- Quantity Control & Add To Cart -->
+                <div class="product-qty-row">
+                    <span class="bold" style="font-size: 0.95rem;">Quantity:</span>
+                    <div class="qty-control">
+                        <button class="qty-btn" id="detail-qty-dec">−</button>
+                        <span class="qty-display" id="detail-qty-val">1</span>
+                        <button class="qty-btn" id="detail-qty-inc">+</button>
+                    </div>
+                </div>
+
+                <div style="display: flex; gap: 14px;">
+                    <button class="btn btn-primary btn-lg" id="detail-add-cart-btn" style="flex: 1;">
+                        Add to Cart 🛍️
+                    </button>
+                    <a href="cart.html" class="btn btn-peach btn-lg">
+                        View Cart
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Customer Reviews & Rating Section -->
+        <section class="reviews-section">
+            <div class="section-header">
+                <div>
+                    <h2>Customer Reviews & Ratings</h2>
+                    <p>Authentic feedback from verified shoppers</p>
+                </div>
+            </div>
+
+            <div class="reviews-grid">
+                <!-- Reviews List -->
+                <div>
+                    <h3 style="font-size: 1.15rem; color: var(--lavender-dark); margin-bottom: 14px;">Customer Feedback</h3>
+                    <div id="reviews-list" style="display: flex; flex-direction: column; gap: 14px;">
+                        <p class="text-muted">Loading reviews...</p>
+                    </div>
+                </div>
+
+                <!-- Submit Review Form Card -->
+                <div id="submit-review-card">
+                    <div class="data-card">
+                        <h3 style="font-size: 1.15rem; color: var(--lavender-dark); margin-bottom: 14px;">Write a Review</h3>
+                        <form id="submit-review-form">
+                            <div class="form-group">
+                                <label for="review-rating">Overall Rating</label>
+                                <select id="review-rating" class="form-control" required>
+                                    <option value="" disabled selected>Select star rating</option>
+                                    <option value="5">★★★★★ (5 Stars - Excellent)</option>
+                                    <option value="4">★★★★☆ (4 Stars - Very Good)</option>
+                                    <option value="3">★★★☆☆ (3 Stars - Average)</option>
+                                    <option value="2">★★☆☆☆ (2 Stars - Below Average)</option>
+                                    <option value="1">★☆☆☆☆ (1 Star - Poor)</option>
+                                </select>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="review-comment">Your Review / Comment</label>
+                                <textarea id="review-comment" class="form-control" rows="3" placeholder="Share your experience with this item..." required></textarea>
+                            </div>
+
+                            <button type="submit" class="btn btn-primary" style="width: 100%;">
+                                Submit Review ⭐
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="site-footer">
+        <div class="container footer-inner">
+            <div>
+                <strong style="color: var(--lavender-dark);">MONICA MART</strong> — College Capstone Project by Monica Sornam
+            </div>
+            <div>
+                <span style="color: var(--text-muted);">&copy; 2026 MONICA MART. All rights reserved.</span>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="js/main.js"></script>
+    <script src="js/products.js"></script>
+    <script src="js/chatbot.js"></script>
+</body>
+</html>

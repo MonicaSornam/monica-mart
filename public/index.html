@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MONICA MART — Multi-Seller E-Commerce Marketplace</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+    <!-- Header Navigation -->
+    <header class="site-header">
+        <div class="container header-inner">
+            <a href="index.html" class="logo">
+                <span class="logo-accent">🌸</span>
+                MONICA <span>MART</span>
+            </a>
+            <button class="mobile-nav-toggle" id="mobile-nav-toggle" aria-label="Toggle navigation">☰</button>
+            <ul class="nav-links" id="main-nav">
+                <!-- Injected dynamically based on role by main.js -->
+            </ul>
+        </div>
+    </header>
+
+    <main class="container">
+        <!-- Hero Section -->
+        <section class="hero">
+            <div class="hero-content">
+                <span class="hero-tag">College Capstone Project — Monica Sornam</span>
+                <h1>MONICA MART</h1>
+                <div class="hero-tagline">"Shop Smart. Shop Beautiful."</div>
+                <p>Discover a serene, pastel shopping experience connecting verified sellers and discerning buyers. Powered by a high-performance C++20 Drogon backend and SQLite database.</p>
+                <div class="hero-buttons">
+                    <a href="products.html" class="btn btn-primary btn-lg">Shop Now 🛍️</a>
+                    <a href="register.html" class="btn btn-peach btn-lg">Become a Seller 🏪</a>
+                </div>
+            </div>
+        </section>
+
+        <!-- Categories Section -->
+        <section style="margin: 40px 0 20px;">
+            <div class="section-header">
+                <div>
+                    <h2>Shop by Category</h2>
+                    <p>Explore curated pastel collections for everyday style and living</p>
+                </div>
+                <a href="products.html" class="btn btn-sm btn-outline">View All →</a>
+            </div>
+
+            <div class="category-cards-grid">
+                <div class="category-card" onclick="window.location.href='products.html?category=Electronics'">
+                    <div class="category-icon">💻</div>
+                    <div class="category-name">Electronics</div>
+                </div>
+                <div class="category-card" onclick="window.location.href='products.html?category=Fashion'">
+                    <div class="category-icon">👗</div>
+                    <div class="category-name">Fashion</div>
+                </div>
+                <div class="category-card" onclick="window.location.href='products.html?category=Home'">
+                    <div class="category-icon">🏡</div>
+                    <div class="category-name">Home</div>
+                </div>
+                <div class="category-card" onclick="window.location.href='products.html?category=Beauty'">
+                    <div class="category-icon">✨</div>
+                    <div class="category-name">Beauty</div>
+                </div>
+                <div class="category-card" onclick="window.location.href='products.html?category=Accessories'">
+                    <div class="category-icon">⌚</div>
+                    <div class="category-name">Accessories</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Featured Products -->
+        <section style="margin: 40px 0 50px;">
+            <div class="section-header">
+                <div>
+                    <h2>Featured Products</h2>
+                    <p>Handpicked essentials from verified sellers</p>
+                </div>
+                <a href="products.html" class="btn btn-sm btn-outline">Browse Catalog →</a>
+            </div>
+
+            <div class="products-grid" id="featured-products-grid">
+                <div style="grid-column: 1/-1; text-align: center; padding: 40px;">
+                    <p class="text-muted">Loading featured products...</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Why Choose Monica Mart -->
+        <section style="margin: 40px 0 60px;">
+            <div class="section-header text-center" style="display: block; text-align: center;">
+                <h2>Why Choose Monica Mart</h2>
+                <p>Engineered for speed, security, and seamless multi-vendor shopping</p>
+            </div>
+
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">🏪</div>
+                    <h3>Multi-Seller Platform</h3>
+                    <p>Independent merchants list and manage their products directly with live stock synchronization.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">🛡️</div>
+                    <h3>Secure & Verified</h3>
+                    <p>Cryptographic SHA-256 password security, role-based authorization, and protected checkout.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">⚡</div>
+                    <h3>C++20 & Drogon Speed</h3>
+                    <p>Asynchronous, event-driven C++20 Drogon framework paired with an SQLite relational database.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">🤖</div>
+                    <h3>AI Shopping Assistant</h3>
+                    <p>Interactive on-site chatbot assisting with search, cart management, checkout, and seller registration.</p>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="site-footer">
+        <div class="container footer-inner">
+            <div>
+                <strong style="color: var(--lavender-dark);">MONICA MART</strong> — Individual College Capstone Project
+                <p style="color: var(--text-muted); font-size: 0.82rem; margin-top: 4px;">
+                    Developer: <strong>Monica Sornam</strong> | C++20 &bull; Drogon &bull; SQLite3 &bull; Vanilla HTML/CSS/JS
+                </p>
+            </div>
+            <div>
+                <span style="color: var(--text-muted);">&copy; 2026 MONICA MART. All rights reserved.</span>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="js/main.js"></script>
+    <script src="js/products.js"></script>
+    <script src="js/chatbot.js"></script>
+</body>
+</html>
