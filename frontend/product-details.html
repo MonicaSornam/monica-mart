@@ -8,254 +8,138 @@
 </head>
 <body>
 
-    <!-- Header -->
+    <!-- Header Navigation -->
     <header class="site-header">
         <div class="container header-inner">
             <a href="index.html" class="logo">
-                <div class="logo-icon">M</div>
+                <span class="logo-accent">🌸</span>
                 MONICA <span>MART</span>
             </a>
-            <button class="mobile-nav-toggle" id="mobile-nav-toggle">☰</button>
-            <ul class="nav-links" id="main-nav"></ul>
+            <button class="mobile-nav-toggle" id="mobile-nav-toggle" aria-label="Toggle navigation">☰</button>
+            <ul class="nav-links" id="main-nav">
+                <!-- Injected dynamically by main.js -->
+            </ul>
         </div>
     </header>
 
-    <main class="container" style="margin-top: 30px; margin-bottom: 60px;">
-        <div style="margin-bottom: 16px;">
-            <a href="products.html" class="text-muted" style="font-size: 0.9rem;">← Back to Products</a>
+    <main class="container" style="padding-top: 32px;" id="product-detail-container">
+        <!-- Breadcrumb Link -->
+        <div style="margin-bottom: 20px;">
+            <a href="products.html" style="color: var(--text-muted); font-size: 0.9rem;">&larr; Back to Products Catalog</a>
         </div>
 
-        <div id="product-detail-area">
-            <div style="text-align: center; padding: 60px;">
-                <p class="text-muted">Loading product details...</p>
+        <!-- Product Details Card -->
+        <div class="product-detail-layout">
+            <div class="product-detail-image" id="detail-img-container">
+                <!-- Injected by products.js -->
+            </div>
+
+            <div class="product-detail-info">
+                <div class="product-meta-row">
+                    <span class="badge badge-rose" id="detail-category">Category</span>
+                    <span style="font-size: 0.85rem; color: var(--text-muted);">
+                        Sold by: <strong id="detail-seller" style="color: var(--lavender-dark);">Seller</strong>
+                    </span>
+                </div>
+
+                <h1 id="detail-title">Product Name</h1>
+
+                <div class="product-detail-price" id="detail-price">₹0</div>
+
+                <div id="detail-stock" style="margin-bottom: 18px;">
+                    <!-- Stock badge -->
+                </div>
+
+                <p class="product-detail-desc" id="detail-desc">
+                    Product description...
+                </p>
+
+                <!-- Quantity Control & Add To Cart -->
+                <div class="product-qty-row">
+                    <span class="bold" style="font-size: 0.95rem;">Quantity:</span>
+                    <div class="qty-control">
+                        <button class="qty-btn" id="detail-qty-dec">−</button>
+                        <span class="qty-display" id="detail-qty-val">1</span>
+                        <button class="qty-btn" id="detail-qty-inc">+</button>
+                    </div>
+                </div>
+
+                <div style="display: flex; gap: 14px;">
+                    <button class="btn btn-primary btn-lg" id="detail-add-cart-btn" style="flex: 1;">
+                        Add to Cart 🛍️
+                    </button>
+                    <a href="cart.html" class="btn btn-peach btn-lg">
+                        View Cart
+                    </a>
+                </div>
             </div>
         </div>
 
-        <!-- Reviews Section -->
-        <div class="reviews-section" id="reviews-section" style="display: none;">
-            <div class="reviews-header">
+        <!-- Customer Reviews & Rating Section -->
+        <section class="reviews-section">
+            <div class="section-header">
                 <div>
-                    <h2 style="font-size: 1.6rem;">Customer Reviews</h2>
-                    <p class="text-muted" id="reviews-summary-text">Ratings and feedback from verified buyers</p>
+                    <h2>Customer Reviews & Ratings</h2>
+                    <p>Authentic feedback from verified shoppers</p>
                 </div>
             </div>
 
-            <!-- Review Submission Form for Buyers -->
-            <div class="review-form-card" id="review-form-container">
-                <h3 style="font-size: 1.15rem; margin-bottom: 12px; color: var(--primary-dark);">Write a Product Review</h3>
-                <div class="form-group">
-                    <label class="form-label">Your Rating</label>
-                    <select id="review-rating-select" class="form-control" style="max-width: 200px;">
-                        <option value="5">★★★★★ (5 Stars - Excellent)</option>
-                        <option value="4">★★★★☆ (4 Stars - Good)</option>
-                        <option value="3">★★★☆☆ (3 Stars - Average)</option>
-                        <option value="2">★★☆☆☆ (2 Stars - Fair)</option>
-                        <option value="1">★☆☆☆☆ (1 Star - Poor)</option>
-                    </select>
+            <div class="reviews-grid">
+                <!-- Reviews List -->
+                <div>
+                    <h3 style="font-size: 1.15rem; color: var(--lavender-dark); margin-bottom: 14px;">Customer Feedback</h3>
+                    <div id="reviews-list" style="display: flex; flex-direction: column; gap: 14px;">
+                        <p class="text-muted">Loading reviews...</p>
+                    </div>
                 </div>
-                <div class="form-group">
-                    <label class="form-label">Your Feedback / Comment</label>
-                    <textarea id="review-comment-input" class="form-control" rows="3" placeholder="Share your experience with this product..."></textarea>
-                </div>
-                <button class="btn btn-primary" onclick="submitReview()">Submit Review</button>
-            </div>
 
-            <!-- Existing Reviews Feed -->
-            <div id="reviews-feed">
-                <!-- Populated via JavaScript -->
+                <!-- Submit Review Form Card -->
+                <div id="submit-review-card">
+                    <div class="data-card">
+                        <h3 style="font-size: 1.15rem; color: var(--lavender-dark); margin-bottom: 14px;">Write a Review</h3>
+                        <form id="submit-review-form">
+                            <div class="form-group">
+                                <label for="review-rating">Overall Rating</label>
+                                <select id="review-rating" class="form-control" required>
+                                    <option value="" disabled selected>Select star rating</option>
+                                    <option value="5">★★★★★ (5 Stars - Excellent)</option>
+                                    <option value="4">★★★★☆ (4 Stars - Very Good)</option>
+                                    <option value="3">★★★☆☆ (3 Stars - Average)</option>
+                                    <option value="2">★★☆☆☆ (2 Stars - Below Average)</option>
+                                    <option value="1">★☆☆☆☆ (1 Star - Poor)</option>
+                                </select>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="review-comment">Your Review / Comment</label>
+                                <textarea id="review-comment" class="form-control" rows="3" placeholder="Share your experience with this item..." required></textarea>
+                            </div>
+
+                            <button type="submit" class="btn btn-primary" style="width: 100%;">
+                                Submit Review ⭐
+                            </button>
+                        </form>
+                    </div>
+                </div>
             </div>
-        </div>
+        </section>
     </main>
 
     <!-- Footer -->
     <footer class="site-footer">
         <div class="container footer-inner">
             <div>
-                <strong style="color: var(--primary);">MONICA MART</strong> — Multi-Seller E-Commerce Marketplace
-                <p style="font-size: 0.82rem; margin-top: 4px;">Developer: Monica Sornam | College Capstone Project</p>
+                <strong style="color: var(--lavender-dark);">MONICA MART</strong> — College Capstone Project by Monica Sornam
             </div>
-            <div>&copy; 2026 MONICA MART. All rights reserved.</div>
+            <div>
+                <span style="color: var(--text-muted);">&copy; 2026 MONICA MART. All rights reserved.</span>
+            </div>
         </div>
     </footer>
 
-    <script src="js/app.js"></script>
-    <script>
-        let currentProductId = null;
-        let productStock = 0;
-
-        document.addEventListener('DOMContentLoaded', () => {
-            const urlParams = new URLSearchParams(window.location.search);
-            currentProductId = urlParams.get('id');
-
-            if (!currentProductId) {
-                document.getElementById('product-detail-area').innerHTML = `
-                    <div class="table-card text-center" style="padding: 50px;">
-                        <h3>No product specified</h3>
-                        <p class="text-muted" style="margin: 12px 0 20px 0;">Please select a product from the catalog.</p>
-                        <a href="products.html" class="btn btn-primary">Go to Products</a>
-                    </div>
-                `;
-                return;
-            }
-
-            loadProductDetails();
-        });
-
-        async function loadProductDetails() {
-            const res = await apiRequest(`/products/${currentProductId}`);
-            if (!res.ok || !res.data.success) {
-                document.getElementById('product-detail-area').innerHTML = `
-                    <div class="table-card text-center" style="padding: 50px;">
-                        <h3>Product Not Found</h3>
-                        <p class="text-muted" style="margin: 12px 0 20px 0;">This product may have been removed or is unavailable.</p>
-                        <a href="products.html" class="btn btn-primary">Return to Marketplace</a>
-                    </div>
-                `;
-                return;
-            }
-
-            const p = res.data.product;
-            productStock = p.quantity;
-
-            document.title = `${p.product_name} — MONICA MART`;
-
-            document.getElementById('product-detail-area').innerHTML = `
-                <div class="product-detail-container">
-                    <div class="product-detail-grid">
-                        <div class="product-detail-img-wrap">
-                            <img src="${p.image || 'https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=600'}" alt="${p.product_name}">
-                        </div>
-                        <div class="product-detail-info">
-                            <div style="display: flex; gap: 8px; margin-bottom: 8px;">
-                                <span class="badge badge-purple">${p.category}</span>
-                                <span class="badge ${p.quantity > 0 ? 'badge-success' : 'badge-danger'}">
-                                    ${p.quantity > 0 ? `${p.quantity} Units in Stock` : 'Out of Stock'}
-                                </span>
-                            </div>
-                            <h1>${p.product_name}</h1>
-                            <p style="color: var(--text-muted); font-size: 0.95rem;">
-                                Sold by: <strong style="color: var(--text-main);">${p.seller_name}</strong>
-                            </p>
-                            <div class="product-rating" style="margin: 10px 0; font-size: 1.1rem;">
-                                ★ ${p.rating > 0 ? p.rating : '5.0'} 
-                                <span style="font-size: 0.9rem;">(${p.review_count} verified reviews)</span>
-                            </div>
-                            <div class="product-detail-price">${formatPrice(p.price)}</div>
-                            <p class="product-detail-desc">${p.description || 'No detailed description available.'}</p>
-
-                            <div class="qty-action-row">
-                                <div class="qty-selector">
-                                    <button class="qty-btn" onclick="adjustQty(-1)">-</button>
-                                    <input type="number" id="detail-qty-input" class="qty-input" value="1" min="1" max="${p.quantity}" readonly>
-                                    <button class="qty-btn" onclick="adjustQty(1)">+</button>
-                                </div>
-                                <button class="btn btn-primary btn-lg" onclick="addToCartFromDetails()" ${p.quantity <= 0 ? 'disabled' : ''}>
-                                    🛒 Add to Cart
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            `;
-
-            // Setup Reviews
-            document.getElementById('reviews-section').style.display = 'block';
-            renderReviews(p.reviews || [], p.rating, p.review_count);
-        }
-
-        function adjustQty(change) {
-            const input = document.getElementById('detail-qty-input');
-            let current = parseInt(input.value) || 1;
-            let target = current + change;
-            if (target < 1) target = 1;
-            if (target > productStock) {
-                target = productStock;
-                showToast(`Cannot add more than available stock (${productStock}).`, 'warning');
-            }
-            input.value = target;
-        }
-
-        async function addToCartFromDetails() {
-            const user = AppState.getUser();
-            if (!user) {
-                showToast('Please log in to add items to cart.', 'warning');
-                setTimeout(() => window.location.href = 'login.html', 1200);
-                return;
-            }
-            if (user.role !== 'BUYER') {
-                showToast('Only buyers can add items to cart.', 'warning');
-                return;
-            }
-
-            const qty = parseInt(document.getElementById('detail-qty-input').value) || 1;
-            const res = await apiRequest('/cart', 'POST', { product_id: parseInt(currentProductId), quantity: qty });
-
-            if (res.ok && res.data.success) {
-                showToast(res.data.message || 'Added to cart successfully!', 'success');
-                refreshCartCount();
-            } else {
-                showToast(res.data.message || 'Failed to add to cart.', 'error');
-            }
-        }
-
-        function renderReviews(reviews, avgRating, count) {
-            document.getElementById('reviews-summary-text').textContent = 
-                count > 0 ? `Average Rating: ${avgRating} / 5.0 (${count} customer reviews)` : 'Be the first to review this product!';
-
-            const feed = document.getElementById('reviews-feed');
-            if (reviews.length === 0) {
-                feed.innerHTML = '<p class="text-muted" style="padding: 20px 0;">No reviews yet. Buyers can leave a review below.</p>';
-                return;
-            }
-
-            feed.innerHTML = reviews.map(r => `
-                <div class="review-card">
-                    <div class="review-card-header">
-                        <div>
-                            <strong>${r.buyer_name}</strong>
-                            <span class="text-muted" style="font-size: 0.8rem; margin-left: 8px;">${r.created_at || ''}</span>
-                        </div>
-                        <div class="review-stars">${'★'.repeat(r.rating)}${'☆'.repeat(5 - r.rating)}</div>
-                    </div>
-                    <p style="color: var(--text-main); font-size: 0.95rem;">${r.comment || 'No comment provided.'}</p>
-                </div>
-            `).join('');
-        }
-
-        async function submitReview() {
-            const user = AppState.getUser();
-            if (!user) {
-                showToast('Please log in as a buyer to leave a review.', 'warning');
-                setTimeout(() => window.location.href = 'login.html', 1000);
-                return;
-            }
-            if (user.role !== 'BUYER') {
-                showToast('Only buyer accounts can submit reviews.', 'warning');
-                return;
-            }
-
-            const rating = parseInt(document.getElementById('review-rating-select').value);
-            const comment = document.getElementById('review-comment-input').value.trim();
-
-            if (!comment) {
-                showToast('Please enter your feedback comment.', 'warning');
-                return;
-            }
-
-            const res = await apiRequest('/reviews', 'POST', {
-                product_id: parseInt(currentProductId),
-                rating,
-                comment
-            });
-
-            if (res.ok && res.data.success) {
-                showToast(res.data.message || 'Review submitted successfully!', 'success');
-                document.getElementById('review-comment-input').value = '';
-                loadProductDetails(); // Refresh review list
-            } else {
-                showToast(res.data.message || 'Failed to submit review.', 'error');
-            }
-        }
-    </script>
+    <!-- Scripts -->
+    <script src="js/main.js"></script>
+    <script src="js/products.js"></script>
+    <script src="js/chatbot.js"></script>
 </body>
 </html>

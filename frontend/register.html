@@ -8,66 +8,66 @@
 </head>
 <body>
 
-    <!-- Header -->
+    <!-- Header Navigation -->
     <header class="site-header">
         <div class="container header-inner">
             <a href="index.html" class="logo">
-                <div class="logo-icon">M</div>
+                <span class="logo-accent">🌸</span>
                 MONICA <span>MART</span>
             </a>
-            <button class="mobile-nav-toggle" id="mobile-nav-toggle">☰</button>
-            <ul class="nav-links" id="main-nav"></ul>
+            <ul class="nav-links" id="main-nav">
+                <!-- Injected dynamically by main.js -->
+            </ul>
         </div>
     </header>
 
     <main class="container">
         <div class="auth-wrapper">
             <div class="auth-card">
-                <div class="text-center" style="margin-bottom: 24px;">
-                    <div class="logo-icon" style="margin: 0 auto 12px auto; width: 44px; height: 44px; font-size: 1.5rem;">M</div>
-                    <h1 style="font-size: 1.8rem;">Create an Account</h1>
-                    <p class="text-muted">Join MONICA MART as a Buyer or Seller</p>
-                </div>
+                <h2>Create Account</h2>
+                <p class="subtitle">Join Monica Mart as a Buyer or Seller</p>
 
-                <form id="register-form" onsubmit="event.preventDefault(); handleRegister();">
+                <form id="register-form">
                     <div class="form-group">
-                        <label class="form-label" for="reg-name">Full Name</label>
-                        <input type="text" id="reg-name" class="form-control" placeholder="e.g. Ramesh Kumar" required>
-                    </div>
-
-                    <div class="form-group">
-                        <label class="form-label" for="reg-email">Email Address</label>
-                        <input type="email" id="reg-email" class="form-control" placeholder="name@example.com" required>
-                    </div>
-
-                    <div class="form-group">
-                        <label class="form-label" for="reg-password">Password</label>
-                        <input type="password" id="reg-password" class="form-control" placeholder="Minimum 6 characters" minlength="6" required>
-                    </div>
-
-                    <div class="form-group">
-                        <label class="form-label">I want to join as a:</label>
-                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 6px;">
-                            <label style="border: 2px solid var(--border); border-radius: var(--radius); padding: 12px; cursor: pointer; text-align: center; transition: var(--transition);" id="label-role-buyer">
-                                <input type="radio" name="role" value="BUYER" checked onchange="updateRoleUI()" style="margin-bottom: 4px;">
-                                <div style="font-weight: 600; font-size: 0.95rem;">🛍️ Buyer</div>
-                                <div class="text-muted" style="font-size: 0.75rem;">Shop & Review</div>
+                        <label>Select Your Account Type</label>
+                        <div class="role-selector">
+                            <label class="role-option selected">
+                                <input type="radio" name="role" value="BUYER" checked style="display: none;">
+                                👤 <strong>Buyer</strong>
+                                <div style="font-size: 0.76rem; color: var(--text-muted); margin-top: 3px;">Shop & Review</div>
                             </label>
-
-                            <label style="border: 2px solid var(--border); border-radius: var(--radius); padding: 12px; cursor: pointer; text-align: center; transition: var(--transition);" id="label-role-seller">
-                                <input type="radio" name="role" value="SELLER" onchange="updateRoleUI()" style="margin-bottom: 4px;">
-                                <div style="font-weight: 600; font-size: 0.95rem;">🏪 Seller</div>
-                                <div class="text-muted" style="font-size: 0.75rem;">Sell & Manage</div>
+                            <label class="role-option">
+                                <input type="radio" name="role" value="SELLER" style="display: none;">
+                                🏪 <strong>Seller</strong>
+                                <div style="font-size: 0.76rem; color: var(--text-muted); margin-top: 3px;">List & Manage Products</div>
                             </label>
                         </div>
                     </div>
 
-                    <button type="submit" id="reg-submit-btn" class="btn btn-primary btn-block btn-lg" style="margin-top: 24px;">Register Account</button>
+                    <div class="form-group">
+                        <label for="reg-name">Full Name</label>
+                        <input type="text" id="reg-name" class="form-control" placeholder="e.g. Monica Sornam" required autocomplete="name">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="reg-email">Email Address</label>
+                        <input type="email" id="reg-email" class="form-control" placeholder="name@example.com" required autocomplete="email">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="reg-password">Password</label>
+                        <input type="password" id="reg-password" class="form-control" placeholder="Minimum 6 characters" required autocomplete="new-password">
+                    </div>
+
+                    <button type="submit" class="btn btn-primary btn-lg" style="width: 100%; margin-top: 10px;">
+                        Register Now 🌸
+                    </button>
                 </form>
 
-                <div class="text-center" style="margin-top: 24px; font-size: 0.9rem;">
-                    Already have an account? <a href="login.html" class="bold">Log in here</a>
-                </div>
+                <p style="text-align: center; margin-top: 24px; font-size: 0.9rem; color: var(--text-muted);">
+                    Already have an account? 
+                    <a href="login.html" class="bold" style="color: var(--lavender-dark);">Log in here</a>
+                </p>
             </div>
         </div>
     </main>
@@ -76,58 +76,17 @@
     <footer class="site-footer">
         <div class="container footer-inner">
             <div>
-                <strong style="color: var(--primary);">MONICA MART</strong> — Multi-Seller E-Commerce Marketplace
-                <p style="font-size: 0.82rem; margin-top: 4px;">Developer: Monica Sornam | College Capstone Project</p>
+                <strong style="color: var(--lavender-dark);">MONICA MART</strong> — College Capstone Project by Monica Sornam
             </div>
-            <div>&copy; 2026 MONICA MART. All rights reserved.</div>
+            <div>
+                <span style="color: var(--text-muted);">&copy; 2026 MONICA MART</span>
+            </div>
         </div>
     </footer>
 
-    <script src="js/app.js"></script>
-    <script>
-        function updateRoleUI() {
-            const role = document.querySelector('input[name="role"]:checked').value;
-            const buyerLabel = document.getElementById('label-role-buyer');
-            const sellerLabel = document.getElementById('label-role-seller');
-
-            if (role === 'BUYER') {
-                buyerLabel.style.borderColor = 'var(--primary)';
-                buyerLabel.style.background = 'var(--primary-subtle)';
-                sellerLabel.style.borderColor = 'var(--border)';
-                sellerLabel.style.background = 'white';
-            } else {
-                sellerLabel.style.borderColor = 'var(--primary)';
-                sellerLabel.style.background = 'var(--primary-subtle)';
-                buyerLabel.style.borderColor = 'var(--border)';
-                buyerLabel.style.background = 'white';
-            }
-        }
-
-        document.addEventListener('DOMContentLoaded', updateRoleUI);
-
-        async function handleRegister() {
-            const name = document.getElementById('reg-name').value.trim();
-            const email = document.getElementById('reg-email').value.trim();
-            const password = document.getElementById('reg-password').value;
-            const role = document.querySelector('input[name="role"]:checked').value;
-            const btn = document.getElementById('reg-submit-btn');
-
-            btn.disabled = true;
-            btn.textContent = 'Registering...';
-
-            const res = await apiRequest('/register', 'POST', { name, email, password, role });
-
-            if (res.ok && res.data.success) {
-                showToast(res.data.message || 'Registration successful!', 'success');
-                setTimeout(() => {
-                    window.location.href = 'login.html';
-                }, 1200);
-            } else {
-                showToast(res.data.message || 'Registration failed.', 'error');
-                btn.disabled = false;
-                btn.textContent = 'Register Account';
-            }
-        }
-    </script>
+    <!-- Scripts -->
+    <script src="js/main.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/chatbot.js"></script>
 </body>
 </html>

@@ -230,3 +230,92 @@ void OrderController::getOrderDetails(const drogon::HttpRequestPtr& req, std::fu
     auto resp = drogon::HttpResponse::newHttpJsonResponse(ret);
     callback(resp);
 }
+
+void OrderController::updateOrderStatus(const drogon::HttpRequestPtr& req, std::function<void(const drogon::HttpResponsePtr&)>&& callback, int orderId) {
+    CurrentUser user = AuthHelper::getUser(req);
+    if (!user.isLoggedIn() || (!user.isAdmin() && !user.isSeller())) {
+        Json::Value ret;
+        ret["success"] = false;
+        ret["message"] = "Unauthorized. Only sellers or administrators can update order status.";
+        auto resp = drogon::HttpResponse::newHttpJsonResponse(ret);
+        resp->setStatusCode(drogon::k403Forbidden);
+        callback(resp);
+        return;
+    }
+
+    auto jsonPtr = req->getJsonObject();
+    if (!jsonPtr || !jsonPtr->isMember("status")) {
+        Json::Value ret;
+        ret["success"] = false;
+        ret["message"] = "Missing status in request body.";
+        auto resp = drogon::HttpResponse::newHttpJsonResponse(ret);
+        resp->setStatusCode(drogon::k400BadRequest);
+        callback(resp);
+        return;
+    }
+
+    std::string newStatus = (*jsonPtr)["status"].asString();
+    static const std::vector<std::string> validStatuses = {
+        "Pending", "Confirmed", "Processing", "Shipped", "Delivered", "Cancelled"
+    };
+
+    bool isValid = false;
+    for (const auto& s : validStatuses) {
+        if (s == newStatus) {
+            isValid = true;
+            break;
+        }
+    }
+
+    if (!isValid) {
+        Json::Value ret;
+        ret["success"] = false;
+        ret["message"] = "Invalid status. Allowed values: Pending, Confirmed, Processing, Shipped, Delivered, Cancelled.";
+        auto resp = drogon::HttpResponse::newHttpJsonResponse(ret);
+        resp->setStatusCode(drogon::k400BadRequest);
+        callback(resp);
+        return;
+    }
+
+    // If seller, verify seller actually has an item in this order
+    if (user.isSeller() && !user.isAdmin()) {
+        auto sellerCheck = DbManager::instance().query(
+            "SELECT order_item_id FROM order_items WHERE order_id = ? AND seller_id = ? LIMIT 1;",
+            {std::to_string(orderId), std::to_string(user.id)}
+        );
+        if (sellerCheck.empty()) {
+            Json::Value ret;
+            ret["success"] = false;
+            ret["message"] = "Forbidden. You can only update status for orders containing your products.";
+            auto resp = drogon::HttpResponse::newHttpJsonResponse(ret);
+            resp->setStatusCode(drogon::k403Forbidden);
+            callback(resp);
+            return;
+        }
+    }
+
+    int affected = DbManager::instance().execute(
+        "UPDATE orders SET status = ? WHERE order_id = ?;",
+        {newStatus, std::to_string(orderId)}
+    );
+
+    if (affected <= 0) {
+        Json::Value ret;
+        ret["success"] = false;
+        ret["message"] = "Order not found or status already matches.";
+        auto resp = drogon::HttpResponse::newHttpJsonResponse(ret);
+        resp->setStatusCode(drogon::k404NotFound);
+        callback(resp);
+        return;
+    }
+
+    Json::Value ret;
+    ret["success"] = true;
+    ret["message"] = "Order status updated successfully.";
+    ret["order_id"] = orderId;
+    ret["status"] = newStatus;
+
+    auto resp = drogon::HttpResponse::newHttpJsonResponse(ret);
+    callback(resp);
+}
+

@@ -3,58 +3,68 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login — MONICA MART</title>
+    <title>Log In — MONICA MART</title>
     <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
 
-    <!-- Header -->
+    <!-- Header Navigation -->
     <header class="site-header">
         <div class="container header-inner">
             <a href="index.html" class="logo">
-                <div class="logo-icon">M</div>
+                <span class="logo-accent">🌸</span>
                 MONICA <span>MART</span>
             </a>
-            <button class="mobile-nav-toggle" id="mobile-nav-toggle">☰</button>
-            <ul class="nav-links" id="main-nav"></ul>
+            <ul class="nav-links" id="main-nav">
+                <!-- Injected dynamically by main.js -->
+            </ul>
         </div>
     </header>
 
     <main class="container">
         <div class="auth-wrapper">
             <div class="auth-card">
-                <div class="text-center" style="margin-bottom: 24px;">
-                    <div class="logo-icon" style="margin: 0 auto 12px auto; width: 44px; height: 44px; font-size: 1.5rem;">M</div>
-                    <h1 style="font-size: 1.8rem;">Welcome Back</h1>
-                    <p class="text-muted">Sign in to your MONICA MART account</p>
-                </div>
+                <h2>Welcome Back</h2>
+                <p class="subtitle">Log in to your Monica Mart account</p>
 
-                <form id="login-form" onsubmit="event.preventDefault(); handleLogin();">
+                <form id="login-form">
                     <div class="form-group">
-                        <label class="form-label" for="login-email">Email Address</label>
-                        <input type="email" id="login-email" class="form-control" placeholder="name@example.com" required>
+                        <label for="login-email">Email Address</label>
+                        <input type="email" id="login-email" class="form-control" placeholder="name@example.com" required autocomplete="email">
                     </div>
+
                     <div class="form-group">
-                        <label class="form-label" for="login-password">Password</label>
-                        <input type="password" id="login-password" class="form-control" placeholder="••••••••" required>
+                        <label for="login-password">Password</label>
+                        <input type="password" id="login-password" class="form-control" placeholder="Enter password" required autocomplete="current-password">
                     </div>
-                    <button type="submit" id="login-submit-btn" class="btn btn-primary btn-block btn-lg">Sign In</button>
+
+                    <button type="submit" class="btn btn-primary btn-lg" style="width: 100%; margin-top: 10px;">
+                        Log In
+                    </button>
                 </form>
 
-                <!-- Quick Demo Login Helpers for Viva/Evaluations -->
-                <div class="demo-accounts-box">
-                    <h4>🧪 Quick Demo Accounts (Click to Auto-Fill):</h4>
-                    <p class="text-muted">Fast login presets for college project evaluation:</p>
-                    <div class="demo-btn-group">
-                        <button type="button" class="btn btn-sm btn-outline" onclick="fillDemo('buyer')">Buyer</button>
-                        <button type="button" class="btn btn-sm btn-outline" onclick="fillDemo('seller')">Seller</button>
-                        <button type="button" class="btn btn-sm btn-outline" onclick="fillDemo('admin')">Admin</button>
+                <!-- Quick Test Credentials for Viva Evaluation -->
+                <div style="margin-top: 26px; padding-top: 20px; border-top: 1px dashed var(--border);">
+                    <div style="font-size: 0.82rem; font-weight: 700; color: var(--text-muted); margin-bottom: 10px; text-align: center;">
+                        QUICK DEMO ACCOUNTS (1-CLICK AUTOFILL)
+                    </div>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px;">
+                        <button type="button" class="btn btn-sm btn-outline" onclick="fillDemoAccount('buyer')">
+                            👤 Buyer
+                        </button>
+                        <button type="button" class="btn btn-sm btn-outline" onclick="fillDemoAccount('seller')">
+                            🏪 Seller
+                        </button>
+                        <button type="button" class="btn btn-sm btn-outline" onclick="fillDemoAccount('admin')">
+                            🛡️ Admin
+                        </button>
                     </div>
                 </div>
 
-                <div class="text-center" style="margin-top: 24px; font-size: 0.9rem;">
-                    Don't have an account yet? <a href="register.html" class="bold">Register here</a>
-                </div>
+                <p style="text-align: center; margin-top: 24px; font-size: 0.9rem; color: var(--text-muted);">
+                    Don't have an account yet? 
+                    <a href="register.html" class="bold" style="color: var(--lavender-dark);">Register here</a>
+                </p>
             </div>
         </div>
     </main>
@@ -63,62 +73,17 @@
     <footer class="site-footer">
         <div class="container footer-inner">
             <div>
-                <strong style="color: var(--primary);">MONICA MART</strong> — Multi-Seller E-Commerce Marketplace
-                <p style="font-size: 0.82rem; margin-top: 4px;">Developer: Monica Sornam | College Capstone Project</p>
+                <strong style="color: var(--lavender-dark);">MONICA MART</strong> — College Capstone Project by Monica Sornam
             </div>
-            <div>&copy; 2026 MONICA MART. All rights reserved.</div>
+            <div>
+                <span style="color: var(--text-muted);">&copy; 2026 MONICA MART</span>
+            </div>
         </div>
     </footer>
 
-    <script src="js/app.js"></script>
-    <script>
-        function fillDemo(type) {
-            const emailInput = document.getElementById('login-email');
-            const passInput = document.getElementById('login-password');
-
-            if (type === 'buyer') {
-                emailInput.value = 'buyer1@monicamart.com';
-                passInput.value = 'Password@123';
-            } else if (type === 'seller') {
-                emailInput.value = 'tech_seller@monicamart.com';
-                passInput.value = 'Password@123';
-            } else if (type === 'admin') {
-                emailInput.value = 'admin@monicamart.com';
-                passInput.value = 'Admin@123';
-            }
-            showToast(`Auto-filled ${type.toUpperCase()} credentials`, 'info');
-        }
-
-        async function handleLogin() {
-            const email = document.getElementById('login-email').value.trim();
-            const password = document.getElementById('login-password').value;
-            const btn = document.getElementById('login-submit-btn');
-
-            btn.disabled = true;
-            btn.textContent = 'Verifying...';
-
-            const res = await apiRequest('/login', 'POST', { email, password });
-
-            if (res.ok && res.data.success) {
-                AppState.setUser(res.data.user);
-                showToast(res.data.message || 'Login successful!', 'success');
-
-                setTimeout(() => {
-                    const role = res.data.user.role;
-                    if (role === 'SELLER') {
-                        window.location.href = 'seller-dashboard.html';
-                    } else if (role === 'ADMIN') {
-                        window.location.href = 'admin-dashboard.html';
-                    } else {
-                        window.location.href = 'products.html';
-                    }
-                }, 800);
-            } else {
-                showToast(res.data.message || 'Invalid email or password.', 'error');
-                btn.disabled = false;
-                btn.textContent = 'Sign In';
-            }
-        }
-    </script>
+    <!-- Scripts -->
+    <script src="js/main.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/chatbot.js"></script>
 </body>
 </html>

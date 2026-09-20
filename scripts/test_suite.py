@@ -26,9 +26,15 @@ def run_tests():
     conn = sqlite3.connect(':memory:')
     cursor = conn.cursor()
 
-    with open('database/database.sql', 'r', encoding='utf-8') as f:
-        schema_sql = f.read()
-    conn.executescript(schema_sql)
+    import os
+    if os.path.exists('sql/schema.sql') and os.path.exists('sql/seed.sql'):
+        with open('sql/schema.sql', 'r', encoding='utf-8') as f:
+            conn.executescript(f.read())
+        with open('sql/seed.sql', 'r', encoding='utf-8') as f:
+            conn.executescript(f.read())
+    elif os.path.exists('database/database.sql'):
+        with open('database/database.sql', 'r', encoding='utf-8') as f:
+            conn.executescript(f.read())
 
     tests_passed = 0
     total_tests = 22

@@ -12,12 +12,12 @@
     <header class="site-header">
         <div class="container header-inner">
             <a href="index.html" class="logo">
-                <div class="logo-icon">M</div>
+                <span class="logo-accent">🌸</span>
                 MONICA <span>MART</span>
             </a>
-            <button class="mobile-nav-toggle" id="mobile-nav-toggle">☰</button>
+            <button class="mobile-nav-toggle" id="mobile-nav-toggle" aria-label="Toggle navigation">☰</button>
             <ul class="nav-links" id="main-nav">
-                <!-- Populated dynamically by app.js -->
+                <!-- Injected dynamically based on role by main.js -->
             </ul>
         </div>
     </header>
@@ -27,53 +27,94 @@
         <section class="hero">
             <div class="hero-content">
                 <span class="hero-tag">College Capstone Project — Monica Sornam</span>
-                <h1>Discover, Shop & Sell at MONICA MART</h1>
-                <p>A modern, multi-seller marketplace empowering buyers with quality products and sellers with effortless store management.</p>
+                <h1>MONICA MART</h1>
+                <div class="hero-tagline">"Shop Smart. Shop Beautiful."</div>
+                <p>Discover a serene, pastel shopping experience connecting verified sellers and discerning buyers. Powered by a high-performance C++20 Drogon backend and SQLite database.</p>
                 <div class="hero-buttons">
-                    <a href="products.html" class="btn btn-lg hero-btn-white">Browse Products 🛍️</a>
-                    <a href="register.html" class="btn btn-lg btn-outline" style="color: white; border-color: white;">Become a Seller 🏪</a>
+                    <a href="products.html" class="btn btn-primary btn-lg">Shop Now 🛍️</a>
+                    <a href="register.html" class="btn btn-peach btn-lg">Become a Seller 🏪</a>
                 </div>
             </div>
         </section>
 
-        <!-- Features Row -->
-        <section class="features-grid">
-            <div class="feature-card">
-                <div class="feature-icon">🏪</div>
-                <h3>Multi-Seller Platform</h3>
-                <p>Verified independent sellers providing direct quality products at wholesale prices.</p>
+        <!-- Categories Section -->
+        <section style="margin: 40px 0 20px;">
+            <div class="section-header">
+                <div>
+                    <h2>Shop by Category</h2>
+                    <p>Explore curated pastel collections for everyday style and living</p>
+                </div>
+                <a href="products.html" class="btn btn-sm btn-outline">View All →</a>
             </div>
-            <div class="feature-card">
-                <div class="feature-icon">🛡️</div>
-                <h3>Secure Transactions</h3>
-                <p>Safe order placement, real-time inventory management, and role-based permissions.</p>
-            </div>
-            <div class="feature-card">
-                <div class="feature-icon">⚡</div>
-                <h3>C++20 & Drogon Speed</h3>
-                <p>Ultra-low latency high performance backend powered by Drogon and SQLite3.</p>
-            </div>
-            <div class="feature-card">
-                <div class="feature-icon">🤖</div>
-                <h3>AI Smart Assistant</h3>
-                <p>Interactive shopping assistant helping with instant registration, search, and checkout help.</p>
+
+            <div class="category-cards-grid">
+                <div class="category-card" onclick="window.location.href='products.html?category=Electronics'">
+                    <div class="category-icon">💻</div>
+                    <div class="category-name">Electronics</div>
+                </div>
+                <div class="category-card" onclick="window.location.href='products.html?category=Fashion'">
+                    <div class="category-icon">👗</div>
+                    <div class="category-name">Fashion</div>
+                </div>
+                <div class="category-card" onclick="window.location.href='products.html?category=Home'">
+                    <div class="category-icon">🏡</div>
+                    <div class="category-name">Home</div>
+                </div>
+                <div class="category-card" onclick="window.location.href='products.html?category=Beauty'">
+                    <div class="category-icon">✨</div>
+                    <div class="category-name">Beauty</div>
+                </div>
+                <div class="category-card" onclick="window.location.href='products.html?category=Accessories'">
+                    <div class="category-icon">⌚</div>
+                    <div class="category-name">Accessories</div>
+                </div>
             </div>
         </section>
 
         <!-- Featured Products -->
-        <section style="margin-bottom: 50px;">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;">
+        <section style="margin: 40px 0 50px;">
+            <div class="section-header">
                 <div>
-                    <h2 style="font-size: 1.8rem;">Featured Products</h2>
-                    <p class="text-muted">Top picks selected by our verified sellers</p>
+                    <h2>Featured Products</h2>
+                    <p>Handpicked essentials from verified sellers</p>
                 </div>
-                <a href="products.html" class="btn btn-outline">View All Products →</a>
+                <a href="products.html" class="btn btn-sm btn-outline">Browse Catalog →</a>
             </div>
 
             <div class="products-grid" id="featured-products-grid">
-                <!-- Products loaded dynamically via JavaScript -->
                 <div style="grid-column: 1/-1; text-align: center; padding: 40px;">
-                    <p class="text-muted">Loading featured products from C++ Drogon server...</p>
+                    <p class="text-muted">Loading featured products...</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Why Choose Monica Mart -->
+        <section style="margin: 40px 0 60px;">
+            <div class="section-header text-center" style="display: block; text-align: center;">
+                <h2>Why Choose Monica Mart</h2>
+                <p>Engineered for speed, security, and seamless multi-vendor shopping</p>
+            </div>
+
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">🏪</div>
+                    <h3>Multi-Seller Platform</h3>
+                    <p>Independent merchants list and manage their products directly with live stock synchronization.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">🛡️</div>
+                    <h3>Secure & Verified</h3>
+                    <p>Cryptographic SHA-256 password security, role-based authorization, and protected checkout.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">⚡</div>
+                    <h3>C++20 & Drogon Speed</h3>
+                    <p>Asynchronous, event-driven C++20 Drogon framework paired with an SQLite relational database.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">🤖</div>
+                    <h3>AI Shopping Assistant</h3>
+                    <p>Interactive on-site chatbot assisting with search, cart management, checkout, and seller registration.</p>
                 </div>
             </div>
         </section>
@@ -83,56 +124,20 @@
     <footer class="site-footer">
         <div class="container footer-inner">
             <div>
-                <strong style="color: var(--primary);">MONICA MART</strong> — Individual College Capstone Project
-                <p style="font-size: 0.82rem; margin-top: 4px;">Developer: Monica Sornam | Tech: C++20 Drogon, SQLite, HTML5/CSS/JS</p>
+                <strong style="color: var(--lavender-dark);">MONICA MART</strong> — Individual College Capstone Project
+                <p style="color: var(--text-muted); font-size: 0.82rem; margin-top: 4px;">
+                    Developer: <strong>Monica Sornam</strong> | C++20 &bull; Drogon &bull; SQLite3 &bull; Vanilla HTML/CSS/JS
+                </p>
             </div>
             <div>
-                <span>&copy; 2026 MONICA MART. All rights reserved.</span>
+                <span style="color: var(--text-muted);">&copy; 2026 MONICA MART. All rights reserved.</span>
             </div>
         </div>
     </footer>
 
-    <script src="js/app.js"></script>
-    <script>
-        document.addEventListener('DOMContentLoaded', async () => {
-            const grid = document.getElementById('featured-products-grid');
-            const res = await apiRequest('/products');
-
-            if (res.ok && res.data.success && res.data.products.length > 0) {
-                // Show first 4 products
-                const featured = res.data.products.slice(0, 4);
-                grid.innerHTML = featured.map(p => `
-                    <div class="product-card">
-                        <div class="product-image-container">
-                            <span class="product-category-tag">${p.category}</span>
-                            <a href="product-details.html?id=${p.product_id}">
-                                <img src="${p.image || 'https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=600'}" alt="${p.product_name}" class="product-image">
-                            </a>
-                        </div>
-                        <div class="product-card-body">
-                            <div class="product-seller">Sold by: <strong>${p.seller_name}</strong></div>
-                            <h3 class="product-title">
-                                <a href="product-details.html?id=${p.product_id}">${p.product_name}</a>
-                            </h3>
-                            <div class="product-rating">
-                                ★ ${p.rating > 0 ? p.rating : '5.0'} <span>(${p.review_count} reviews)</span>
-                            </div>
-                            <div class="product-price-row">
-                                <div class="product-price">${formatPrice(p.price)}</div>
-                                <div class="product-stock ${p.quantity <= 0 ? 'out-of-stock' : ''}">
-                                    ${p.quantity > 0 ? `${p.quantity} in stock` : 'Out of stock'}
-                                </div>
-                            </div>
-                            <button class="btn btn-primary btn-block" onclick="quickAddToCart(${p.product_id})" ${p.quantity <= 0 ? 'disabled' : ''}>
-                                ${p.quantity > 0 ? '🛒 Add to Cart' : 'Out of Stock'}
-                            </button>
-                        </div>
-                    </div>
-                `).join('');
-            } else {
-                grid.innerHTML = '<p class="text-center" style="grid-column: 1/-1; padding: 30px;">No products available right now.</p>';
-            }
-        });
-    </script>
+    <!-- Scripts -->
+    <script src="js/main.js"></script>
+    <script src="js/products.js"></script>
+    <script src="js/chatbot.js"></script>
 </body>
 </html>

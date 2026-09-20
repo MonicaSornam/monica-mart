@@ -8,27 +8,33 @@
 </head>
 <body>
 
-    <!-- Header -->
+    <!-- Header Navigation -->
     <header class="site-header">
         <div class="container header-inner">
             <a href="index.html" class="logo">
-                <div class="logo-icon">M</div>
+                <span class="logo-accent">🌸</span>
                 MONICA <span>MART</span>
             </a>
-            <button class="mobile-nav-toggle" id="mobile-nav-toggle">☰</button>
-            <ul class="nav-links" id="main-nav"></ul>
+            <button class="mobile-nav-toggle" id="mobile-nav-toggle" aria-label="Toggle navigation">☰</button>
+            <ul class="nav-links" id="main-nav">
+                <!-- Injected dynamically by main.js -->
+            </ul>
         </div>
     </header>
 
-    <main class="container" style="margin-top: 30px; margin-bottom: 60px;">
-        <div style="margin-bottom: 24px;">
-            <h1 style="font-size: 2rem;">Your Shopping Cart</h1>
-            <p class="text-muted">Review your selected items before proceeding to checkout</p>
+    <main class="container" style="padding-top: 32px;">
+        <div class="section-header">
+            <div>
+                <h1>Your Shopping Cart</h1>
+                <p>Review selected items and proceed to secure checkout</p>
+            </div>
+            <a href="products.html" class="btn btn-sm btn-outline">&larr; Continue Shopping</a>
         </div>
 
+        <!-- Dynamic Cart Container -->
         <div id="cart-container">
-            <div style="text-align: center; padding: 60px;">
-                <p class="text-muted">Loading your cart items...</p>
+            <div style="text-align: center; padding: 50px;">
+                <p class="text-muted">Loading your shopping cart...</p>
             </div>
         </div>
     </main>
@@ -37,165 +43,17 @@
     <footer class="site-footer">
         <div class="container footer-inner">
             <div>
-                <strong style="color: var(--primary);">MONICA MART</strong> — Multi-Seller E-Commerce Marketplace
-                <p style="font-size: 0.82rem; margin-top: 4px;">Developer: Monica Sornam | College Capstone Project</p>
+                <strong style="color: var(--lavender-dark);">MONICA MART</strong> — College Capstone Project by Monica Sornam
             </div>
-            <div>&copy; 2026 MONICA MART. All rights reserved.</div>
+            <div>
+                <span style="color: var(--text-muted);">&copy; 2026 MONICA MART. All rights reserved.</span>
+            </div>
         </div>
     </footer>
 
-    <script src="js/app.js"></script>
-    <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            const user = AppState.getUser();
-            if (!user) {
-                document.getElementById('cart-container').innerHTML = `
-                    <div class="table-card text-center" style="padding: 50px;">
-                        <h3>Please Log In</h3>
-                        <p class="text-muted" style="margin: 12px 0 20px 0;">You must be logged in as a buyer to view your cart.</p>
-                        <a href="login.html" class="btn btn-primary">Go to Login</a>
-                    </div>
-                `;
-                return;
-            }
-
-            if (user.role !== 'BUYER') {
-                document.getElementById('cart-container').innerHTML = `
-                    <div class="table-card text-center" style="padding: 50px;">
-                        <h3>Buyer Cart</h3>
-                        <p class="text-muted" style="margin: 12px 0 20px 0;">You are logged in as <strong>${user.role}</strong>. Carts are only for Buyer accounts.</p>
-                        <a href="index.html" class="btn btn-primary">Return to Marketplace</a>
-                    </div>
-                `;
-                return;
-            }
-
-            loadCart();
-        });
-
-        async function loadCart() {
-            const container = document.getElementById('cart-container');
-            const res = await apiRequest('/cart');
-
-            if (!res.ok || !res.data.success || !res.data.items || res.data.items.length === 0) {
-                container.innerHTML = `
-                    <div class="table-card text-center" style="padding: 60px;">
-                        <div style="font-size: 3rem; margin-bottom: 12px;">🛒</div>
-                        <h3>Your cart is empty</h3>
-                        <p class="text-muted" style="margin: 8px 0 24px 0;">Looks like you haven't added any items to your cart yet.</p>
-                        <a href="products.html" class="btn btn-primary">Start Shopping Now</a>
-                    </div>
-                `;
-                refreshCartCount();
-                return;
-            }
-
-            const items = res.data.items;
-            const totalAmount = res.data.total_amount;
-            const totalItems = res.data.total_items;
-
-            container.innerHTML = `
-                <div class="cart-layout">
-                    <div class="table-card">
-                        <table class="cart-table">
-                            <thead>
-                                <tr>
-                                    <th>Product</th>
-                                    <th>Price</th>
-                                    <th>Quantity</th>
-                                    <th>Subtotal</th>
-                                    <th>Remove</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                ${items.map(item => `
-                                    <tr>
-                                        <td>
-                                            <div class="cart-item-info">
-                                                <img src="${item.image || 'https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=600'}" alt="${item.product_name}" class="cart-item-img">
-                                                <div>
-                                                    <a href="product-details.html?id=${item.product_id}" style="font-weight: 600; color: var(--text-main); display: block;">${item.product_name}</a>
-                                                    <span class="text-muted" style="font-size: 0.8rem;">Stock: ${item.stock}</span>
-                                                </div>
-                                            </div>
-                                        </td>
-                                        <td class="bold">${formatPrice(item.price)}</td>
-                                        <td>
-                                            <div class="qty-selector" style="max-width: 120px;">
-                                                <button class="qty-btn" onclick="updateItemQuantity(${item.item_id}, ${item.quantity - 1}, ${item.stock})">-</button>
-                                                <input type="text" class="qty-input" value="${item.quantity}" readonly>
-                                                <button class="qty-btn" onclick="updateItemQuantity(${item.item_id}, ${item.quantity + 1}, ${item.stock})">+</button>
-                                            </div>
-                                        </td>
-                                        <td class="bold" style="color: var(--primary);">${formatPrice(item.subtotal)}</td>
-                                        <td>
-                                            <button class="btn btn-sm btn-danger" onclick="removeItem(${item.item_id})" title="Remove item">✕</button>
-                                        </td>
-                                    </tr>
-                                `).join('')}
-                            </tbody>
-                        </table>
-                    </div>
-
-                    <div class="summary-card">
-                        <h3 style="margin-bottom: 16px;">Order Summary</h3>
-                        <div class="summary-row">
-                            <span>Items Count:</span>
-                            <span class="bold">${totalItems}</span>
-                        </div>
-                        <div class="summary-row">
-                            <span>Subtotal:</span>
-                            <span class="bold">${formatPrice(totalAmount)}</span>
-                        </div>
-                        <div class="summary-row">
-                            <span>Shipping Delivery:</span>
-                            <span style="color: var(--success); font-weight: 600;">FREE</span>
-                        </div>
-                        <div class="summary-total summary-row">
-                            <span>TOTAL PRICE:</span>
-                            <span class="price">${formatPrice(totalAmount)}</span>
-                        </div>
-                        <div style="margin-top: 24px;">
-                            <a href="checkout.html" class="btn btn-primary btn-lg btn-block">PROCEED TO CHECKOUT →</a>
-                            <a href="products.html" class="btn btn-secondary btn-block" style="margin-top: 10px;">Continue Shopping</a>
-                        </div>
-                    </div>
-                </div>
-            `;
-
-            refreshCartCount();
-        }
-
-        async function updateItemQuantity(itemId, newQty, stock) {
-            if (newQty <= 0) {
-                if (confirm("Remove this product from your cart?")) {
-                    removeItem(itemId);
-                }
-                return;
-            }
-
-            if (newQty > stock) {
-                showToast(`Cannot exceed available stock (${stock}).`, 'warning');
-                return;
-            }
-
-            const res = await apiRequest(`/cart/${itemId}`, 'PUT', { quantity: newQty });
-            if (res.ok && res.data.success) {
-                loadCart();
-            } else {
-                showToast(res.data.message || 'Failed to update quantity.', 'error');
-            }
-        }
-
-        async function removeItem(itemId) {
-            const res = await apiRequest(`/cart/${itemId}`, 'DELETE');
-            if (res.ok && res.data.success) {
-                showToast('Item removed from cart.', 'info');
-                loadCart();
-            } else {
-                showToast(res.data.message || 'Failed to remove item.', 'error');
-            }
-        }
-    </script>
+    <!-- Scripts -->
+    <script src="js/main.js"></script>
+    <script src="js/cart.js"></script>
+    <script src="js/chatbot.js"></script>
 </body>
 </html>

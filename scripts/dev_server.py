@@ -6,8 +6,8 @@ Student Name: Monica Sornam
 Project: College Capstone Project
 
 This local runner provides a zero-setup local HTTP server
-that serves the frontend and executes the exact same SQLite
-REST API endpoints as the C++ Drogon backend.
+that serves the frontend/public web application and executes
+the exact same SQLite REST API endpoints as the C++ Drogon backend.
 Enables immediate Windows testing before or alongside Docker!
 ============================================================
 """
@@ -22,8 +22,11 @@ import urllib.parse
 
 PORT = 8080
 DB_FILE = 'monica_mart.db'
-SCHEMA_FILE = os.path.join('database', 'database.sql')
-FRONTEND_DIR = os.path.abspath('frontend')
+SCHEMA_FILE = os.path.join('sql', 'schema.sql')
+SEED_FILE = os.path.join('sql', 'seed.sql')
+FALLBACK_SQL = os.path.join('database', 'database.sql')
+
+PUBLIC_DIR = os.path.abspath('public') if os.path.exists('public') else os.path.abspath('frontend')
 
 def get_db():
     conn = sqlite3.connect(DB_FILE)
@@ -33,19 +36,27 @@ def get_db():
 
 def init_db():
     if not os.path.exists(DB_FILE) or os.path.getsize(DB_FILE) == 0:
-        print(f"[DB] Initializing {DB_FILE} from {SCHEMA_FILE}...")
+        print(f"[DB] Initializing {DB_FILE}...")
         conn = get_db()
-        with open(SCHEMA_FILE, 'r', encoding='utf-8') as f:
-            conn.executescript(f.read())
+        if os.path.exists(SCHEMA_FILE) and os.path.exists(SEED_FILE):
+            with open(SCHEMA_FILE, 'r', encoding='utf-8') as f:
+                conn.executescript(f.read())
+            with open(SEED_FILE, 'r', encoding='utf-8') as f:
+                conn.executescript(f.read())
+            print("[DB] Loaded schema and seed files from sql/!")
+        elif os.path.exists(FALLBACK_SQL):
+            with open(FALLBACK_SQL, 'r', encoding='utf-8') as f:
+                conn.executescript(f.read())
+            print("[DB] Loaded database from database/database.sql!")
         conn.close()
-        print("[DB] Database initialized with seed accounts and products!")
+        print("[DB] Database initialized with seed accounts and sample products!")
 
 def sha256_hash(text):
     return hashlib.sha256(text.encode('utf-8')).hexdigest()
 
 class MonicaMartHandler(http.server.SimpleHTTPRequestHandler):
     def __init__(self, *args, **kwargs):
-        super().__init__(*args, directory=FRONTEND_DIR, **kwargs)
+        super().__init__(*args, directory=PUBLIC_DIR, **kwargs)
 
     def send_json(self, data, status=200):
         body = json.dumps(data).encode('utf-8')
@@ -125,8 +136,9 @@ class MonicaMartHandler(http.server.SimpleHTTPRequestHandler):
 
         # 2. Product by ID
         if path.startswith('/api/products/'):
-            pid = path.split('/')[-1]
-            if pid.isdigit():
+            parts = path.strip('/').split('/')
+            if len(parts) == 3 and parts[2].isdigit():
+                pid = parts[2]
                 p = conn.execute("""
                     SELECT p.product_id, p.seller_id, p.product_name, p.description, p.price,
                            p.category, p.quantity, p.image, p.created_at, u.name AS seller_name,
@@ -150,24 +162,35 @@ class MonicaMartHandler(http.server.SimpleHTTPRequestHandler):
                     WHERE r.product_id = ?
                     ORDER BY r.review_id DESC
                 """, (pid,)).fetchall()
-                prod["reviews"] = [dict(r) for r in revs]
+                prod['reviews'] = [dict(r) for r in revs]
                 conn.close()
                 return self.send_json({"success": True, "product": prod})
 
-        # 3. Buyer Cart
+            # Product Reviews endpoint: /api/products/<id>/reviews
+            if len(parts) == 4 and parts[2].isdigit() and parts[3] == 'reviews':
+                pid = parts[2]
+                revs = conn.execute("""
+                    SELECT r.review_id, r.buyer_id, u.name AS buyer_name, r.rating, r.comment, r.created_at
+                    FROM reviews r
+                    JOIN users u ON r.buyer_id = u.id
+                    WHERE r.product_id = ?
+                    ORDER BY r.review_id DESC
+                """, (pid,)).fetchall()
+                conn.close()
+                return self.send_json({"success": True, "reviews": [dict(r) for r in revs]})
+
+        # 3. Cart View
         if path == '/api/cart':
             user = self.get_current_user()
             if not user or user['role'] != 'BUYER':
                 conn.close()
                 return self.send_json({"success": False, "message": "Login as buyer required."}, 401)
-            
+
             cart = conn.execute("SELECT cart_id FROM cart WHERE buyer_id = ?", (user['id'],)).fetchone()
             if not cart:
-                conn.execute("INSERT INTO cart (buyer_id) VALUES (?)", (user['id'],))
-                conn.commit()
-                cart = conn.execute("SELECT cart_id FROM cart WHERE buyer_id = ?", (user['id'],)).fetchone()
-            
-            cart_id = cart['cart_id']
+                conn.close()
+                return self.send_json({"success": True, "cart_id": None, "items": [], "total_amount": 0, "total_items": 0})
+
             items = conn.execute("""
                 SELECT ci.item_id, ci.cart_id, ci.product_id, ci.quantity,
                        p.product_name, p.price, p.image, p.category, p.quantity AS stock,
@@ -176,13 +199,19 @@ class MonicaMartHandler(http.server.SimpleHTTPRequestHandler):
                 JOIN products p ON ci.product_id = p.product_id
                 WHERE ci.cart_id = ?
                 ORDER BY ci.item_id DESC
-            """, (cart_id,)).fetchall()
+            """, (cart['cart_id'],)).fetchall()
 
             item_list = [dict(i) for i in items]
-            total = sum(i['subtotal'] for i in item_list)
-            total_items = sum(i['quantity'] for i in item_list)
+            total_amt = sum(i['subtotal'] for i in item_list)
+            total_qty = sum(i['quantity'] for i in item_list)
             conn.close()
-            return self.send_json({"success": True, "cart_id": cart_id, "items": item_list, "total_amount": total, "total_items": total_items})
+            return self.send_json({
+                "success": True,
+                "cart_id": cart['cart_id'],
+                "items": item_list,
+                "total_amount": total_amt,
+                "total_items": total_qty
+            })
 
         # 4. Buyer Orders
         if path == '/api/orders':
@@ -207,6 +236,34 @@ class MonicaMartHandler(http.server.SimpleHTTPRequestHandler):
                 order_list.append(od)
             conn.close()
             return self.send_json({"success": True, "orders": order_list})
+
+        # Order Details: /api/orders/<id>
+        if path.startswith('/api/orders/'):
+            parts = path.strip('/').split('/')
+            if len(parts) == 3 and parts[2].isdigit():
+                oid = parts[2]
+                user = self.get_current_user()
+                if not user:
+                    conn.close()
+                    return self.send_json({"success": False, "message": "Login required."}, 401)
+                
+                ord_row = conn.execute("SELECT * FROM orders WHERE order_id = ?", (oid,)).fetchone()
+                if not ord_row:
+                    conn.close()
+                    return self.send_json({"success": False, "message": "Order not found."}, 404)
+                
+                od = dict(ord_row)
+                items = conn.execute("""
+                    SELECT oi.order_item_id, oi.product_id, oi.quantity, oi.price_per_unit,
+                           p.product_name, p.image, u.name AS seller_name
+                    FROM order_items oi
+                    JOIN products p ON oi.product_id = p.product_id
+                    JOIN users u ON oi.seller_id = u.id
+                    WHERE oi.order_id = ?
+                """, (oid,)).fetchall()
+                od['items'] = [dict(i) for i in items]
+                conn.close()
+                return self.send_json({"success": True, "order": od})
 
         # 5. Seller Products
         if path == '/api/seller/products':
@@ -412,8 +469,8 @@ class MonicaMartHandler(http.server.SimpleHTTPRequestHandler):
             conn.close()
             return self.send_json({"success": True, "message": "Product added successfully!", "product_id": pid}, 201)
 
-        # Add to Cart (Buyer)
-        if path == '/api/cart':
+        # Add to Cart (Buyer) - supports both /api/cart and /api/cart/add
+        if path in ('/api/cart', '/api/cart/add'):
             user = self.get_current_user()
             if not user or user['role'] != 'BUYER':
                 conn.close()
@@ -452,25 +509,25 @@ class MonicaMartHandler(http.server.SimpleHTTPRequestHandler):
                     conn.close()
                     return self.send_json({"success": False, "message": f"Insufficient stock. Only {stock} available."}, 400)
                 conn.execute("INSERT INTO cart_items (cart_id, product_id, quantity) VALUES (?, ?, ?)", (cart_id, pid, qty))
+            
             conn.commit()
             conn.close()
-            return self.send_json({"success": True, "message": "Product added to cart."})
+            return self.send_json({"success": True, "message": "Product added to cart!"})
 
-        # Checkout & Confirm Order
+        # Checkout & Order Placement (Buyer)
         if path == '/api/orders':
             user = self.get_current_user()
             if not user or user['role'] != 'BUYER':
                 conn.close()
                 return self.send_json({"success": False, "message": "Buyer access required."}, 401)
 
-            addr = body.get('shipping_address', 'Default Address').strip()
             cart = conn.execute("SELECT cart_id FROM cart WHERE buyer_id = ?", (user['id'],)).fetchone()
             if not cart:
                 conn.close()
-                return self.send_json({"success": False, "message": "Cart is empty."}, 400)
+                return self.send_json({"success": False, "message": "Cart not found."}, 400)
 
             items = conn.execute("""
-                SELECT ci.item_id, ci.product_id, ci.quantity, p.product_name, p.price, p.seller_id, p.quantity AS stock
+                SELECT ci.product_id, ci.quantity, p.price, p.quantity AS stock, p.seller_id
                 FROM cart_items ci
                 JOIN products p ON ci.product_id = p.product_id
                 WHERE ci.cart_id = ?
@@ -478,25 +535,29 @@ class MonicaMartHandler(http.server.SimpleHTTPRequestHandler):
 
             if not items:
                 conn.close()
-                return self.send_json({"success": False, "message": "Your cart is empty."}, 400)
+                return self.send_json({"success": False, "message": "Cart is empty."}, 400)
 
-            for i in items:
-                if i['quantity'] > i['stock']:
+            # Stock check
+            total = 0.0
+            for it in items:
+                if it['quantity'] > it['stock']:
                     conn.close()
-                    return self.send_json({"success": False, "message": f"Insufficient stock for {i['product_name']}."}, 400)
+                    return self.send_json({"success": False, "message": f"Stock boundary exceeded for Product #{it['product_id']}."}, 400)
+                total += it['quantity'] * it['price']
 
-            total = sum(i['quantity'] * i['price'] for i in items)
-
+            addr = body.get('shipping_address', 'Default Delivery Address').strip()
             cursor = conn.cursor()
             cursor.execute("INSERT INTO orders (buyer_id, total_amount, status, shipping_address) VALUES (?, ?, 'Pending', ?)",
                            (user['id'], total, addr))
             oid = cursor.lastrowid
 
-            for i in items:
-                cursor.execute("INSERT INTO order_items (order_id, product_id, seller_id, quantity, price_per_unit) VALUES (?, ?, ?, ?, ?)",
-                               (oid, i['product_id'], i['seller_id'], i['quantity'], i['price']))
+            for it in items:
+                cursor.execute("""
+                    INSERT INTO order_items (order_id, product_id, seller_id, quantity, price_per_unit)
+                    VALUES (?, ?, ?, ?, ?)
+                """, (oid, it['product_id'], it['seller_id'], it['quantity'], it['price']))
                 cursor.execute("UPDATE products SET quantity = quantity - ? WHERE product_id = ?",
-                               (i['quantity'], i['product_id']))
+                               (it['quantity'], it['product_id']))
 
             cursor.execute("DELETE FROM cart_items WHERE cart_id = ?", (cart['cart_id'],))
             conn.commit()
@@ -532,26 +593,27 @@ class MonicaMartHandler(http.server.SimpleHTTPRequestHandler):
         # Rule-Based Chatbot
         if path == '/api/chatbot':
             msg = body.get('message', '').lower()
-            if "register" in msg or "sign up" in msg or "create account" in msg:
-                reply = "Open the Register page and select Buyer or Seller."
-            elif "add product" in msg or "new product" in msg or "sell" in msg:
-                reply = "Login as a seller and open the Seller Dashboard. Select Add Product."
+            if "search" in msg or "find" in msg:
+                reply = "Open the Products page and use the search bar to find products by name."
+            elif "add" in msg and "cart" in msg:
+                reply = "Click '+ Add to Cart' on any product card, or open product details to pick your quantity."
             elif "checkout" in msg or "place order" in msg:
-                reply = "Add products to your cart and select Proceed to Checkout."
+                reply = "Open your Cart and click 'Proceed to Checkout'. Enter your address and click 'Confirm Order'."
             elif "order" in msg or "history" in msg or "track" in msg:
-                reply = "Open Order History from your buyer dashboard."
-            elif "search" in msg:
-                reply = "Open the Products page and use the search bar."
-            elif "cart" in msg:
-                reply = "Click Cart in the top navigation bar to view your selected items."
-            elif "contact" in msg or "support" in msg:
-                reply = "Please use the contact/support option provided by Monica Mart (support@monicamart.com)."
-            elif "hello" in msg or "hi" in msg:
-                reply = "Hello! Welcome to Monica Mart! How can I assist you today?"
+                reply = "Open the Orders page from the top navigation to see past orders and delivery statuses."
+            elif "categor" in msg:
+                reply = "Monica Mart has 5 categories: Electronics, Fashion, Home, Beauty, and Accessories."
+            elif "review" in msg or "rating" in msg or "star" in msg:
+                reply = "Navigate to any product details page, scroll down to reviews, select 1-5 stars and submit your feedback."
+            elif "remove" in msg or ("delete" in msg and "cart" in msg):
+                reply = "In your cart, click '✕ Remove' or reduce the quantity to zero to remove the item."
+            elif "register" in msg or "sign up" in msg or "seller" in msg:
+                reply = "Click 'Register' in the top bar, pick 'Buyer' or 'Seller', and create your account!"
             else:
-                reply = "Sorry, I can currently answer basic questions about registration, products, cart, checkout and orders."
+                reply = "Hello! I am Monica Mart's shopping assistant. Ask me how to search, add to cart, checkout, or track orders!"
+            
             conn.close()
-            return self.send_json({"success": True, "reply": reply})
+            return self.send_json({"success": True, "reply": reply, "response": reply})
 
         conn.close()
         return self.send_json({"success": False, "message": "Endpoint not found."}, 404)
@@ -561,6 +623,26 @@ class MonicaMartHandler(http.server.SimpleHTTPRequestHandler):
         path = parsed.path
         body = self.read_json_body()
         conn = get_db()
+
+        # Update Order Status (Seller or Admin)
+        if path.startswith('/api/orders/') and path.endswith('/status'):
+            parts = path.strip('/').split('/')
+            oid = parts[2]
+            user = self.get_current_user()
+            if not user or user['role'] not in ('SELLER', 'ADMIN'):
+                conn.close()
+                return self.send_json({"success": False, "message": "Seller or Admin access required."}, 403)
+            
+            new_status = body.get('status', '').strip()
+            valid = ('Pending', 'Confirmed', 'Processing', 'Shipped', 'Delivered', 'Cancelled')
+            if new_status not in valid:
+                conn.close()
+                return self.send_json({"success": False, "message": f"Invalid status. Must be one of {valid}."}, 400)
+
+            conn.execute("UPDATE orders SET status = ? WHERE order_id = ?", (new_status, oid))
+            conn.commit()
+            conn.close()
+            return self.send_json({"success": True, "message": f"Order #{oid} status updated to {new_status}."})
 
         # Update Product (Seller)
         if path.startswith('/api/products/'):
@@ -590,10 +672,11 @@ class MonicaMartHandler(http.server.SimpleHTTPRequestHandler):
             conn.close()
             return self.send_json({"success": True, "message": "Product updated successfully!"})
 
-        # Update Cart Item Quantity
+        # Update Cart Item Quantity - supports /api/cart/<id> and /api/cart/update/<id>
         if path.startswith('/api/cart/'):
             user = self.get_current_user()
-            item_id = path.split('/')[-1]
+            parts = path.strip('/').split('/')
+            item_id = parts[-1]
             if not user or user['role'] != 'BUYER':
                 conn.close()
                 return self.send_json({"success": False, "message": "Buyer access required."}, 401)
@@ -624,9 +707,10 @@ class MonicaMartHandler(http.server.SimpleHTTPRequestHandler):
         conn = get_db()
         user = self.get_current_user()
 
-        # Delete from Cart
+        # Delete from Cart - supports /api/cart/<id> and /api/cart/remove/<id>
         if path.startswith('/api/cart/'):
-            item_id = path.split('/')[-1]
+            parts = path.strip('/').split('/')
+            item_id = parts[-1]
             conn.execute("DELETE FROM cart_items WHERE item_id = ?", (item_id,))
             conn.commit()
             conn.close()

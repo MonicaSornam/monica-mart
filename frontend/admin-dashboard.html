@@ -3,270 +3,193 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Dashboard — MONICA MART</title>
+    <title>Administrator Dashboard — MONICA MART</title>
     <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
 
-    <!-- Header -->
+    <!-- Header Navigation -->
     <header class="site-header">
         <div class="container header-inner">
             <a href="index.html" class="logo">
-                <div class="logo-icon">M</div>
+                <span class="logo-accent">🌸</span>
                 MONICA <span>MART</span>
             </a>
-            <button class="mobile-nav-toggle" id="mobile-nav-toggle">☰</button>
-            <ul class="nav-links" id="main-nav"></ul>
+            <button class="mobile-nav-toggle" id="mobile-nav-toggle" aria-label="Toggle navigation">☰</button>
+            <ul class="nav-links" id="main-nav">
+                <!-- Injected dynamically by main.js -->
+            </ul>
         </div>
     </header>
 
-    <main class="container" style="margin-top: 24px; margin-bottom: 60px;">
-        <!-- Admin Welcome Banner -->
-        <div class="dashboard-header">
-            <div>
-                <span class="badge badge-danger" style="margin-bottom: 6px;">Administrator Portal</span>
-                <h1 style="font-size: 1.8rem;" id="admin-welcome-title">MONICA MART — Admin Dashboard</h1>
-                <p class="text-muted">Platform administration, user management, and marketplace catalog moderation</p>
-            </div>
-            <div>
-                <a href="javascript:void(0)" onclick="handleLogout()" class="btn btn-secondary">Logout</a>
-            </div>
+    <main class="container" style="padding-top: 32px;" id="admin-dashboard-container">
+        <!-- Admin Title Banner -->
+        <div style="background: linear-gradient(135deg, var(--lavender-subtle) 0%, var(--peach-light) 100%); border: 1.5px solid var(--border); border-radius: var(--radius); padding: 24px 30px; margin-bottom: 28px;">
+            <span class="badge badge-cancelled" style="margin-bottom: 6px;">Platform Administrator</span>
+            <h1 style="font-size: 1.8rem; color: var(--lavender-dark);">Marketplace Governance & Audit</h1>
+            <p style="color: var(--text-muted); font-size: 0.95rem;">
+                Platform-wide control over registered users, product catalog moderation, and transaction logs.
+            </p>
         </div>
 
-        <!-- Metric Stat Cards -->
-        <div class="stats-grid">
+        <!-- Metrics Cards -->
+        <div class="dashboard-stats">
             <div class="stat-card">
-                <div class="stat-label">Total Users</div>
-                <div class="stat-number" id="stat-total-users">0</div>
+                <div class="stat-icon">👥</div>
+                <div class="stat-content">
+                    <h4>Total Users</h4>
+                    <div class="stat-value" id="stat-admin-users">0</div>
+                </div>
             </div>
             <div class="stat-card">
-                <div class="stat-label">Total Products</div>
-                <div class="stat-number" id="stat-total-products">0</div>
+                <div class="stat-icon">📦</div>
+                <div class="stat-content">
+                    <h4>Total Products</h4>
+                    <div class="stat-value" id="stat-admin-products">0</div>
+                </div>
             </div>
             <div class="stat-card">
-                <div class="stat-label">Total Orders</div>
-                <div class="stat-number" id="stat-total-orders">0</div>
+                <div class="stat-icon">🛍️</div>
+                <div class="stat-content">
+                    <h4>Total Orders</h4>
+                    <div class="stat-value" id="stat-admin-orders">0</div>
+                </div>
             </div>
             <div class="stat-card">
-                <div class="stat-label">Platform Gross Revenue</div>
-                <div class="stat-number" id="stat-total-revenue" style="color: var(--success);">₹0</div>
-            </div>
-        </div>
-
-        <!-- Navigation Tabs -->
-        <div class="dashboard-tabs">
-            <button class="tab-btn active" onclick="switchAdminTab('users')">👥 Registered Users</button>
-            <button class="tab-btn" onclick="switchAdminTab('products')">📦 All Products & Moderation</button>
-            <button class="tab-btn" onclick="switchAdminTab('orders')">📑 All Platform Orders</button>
-        </div>
-
-        <!-- 1. Users Section -->
-        <div id="tab-admin-users">
-            <div class="table-card">
-                <h3 style="font-size: 1.2rem; margin-bottom: 16px;">Registered Users List</h3>
-                <div style="overflow-x: auto;">
-                    <table class="cart-table">
-                        <thead>
-                            <tr>
-                                <th>User ID</th>
-                                <th>Full Name</th>
-                                <th>Email</th>
-                                <th>Role</th>
-                                <th>Created Date</th>
-                            </tr>
-                        </thead>
-                        <tbody id="admin-users-tbody">
-                            <tr><td colspan="5" class="text-center" style="padding: 30px;">Loading users...</td></tr>
-                        </tbody>
-                    </table>
+                <div class="stat-icon">📈</div>
+                <div class="stat-content">
+                    <h4>Platform Volume</h4>
+                    <div class="stat-value" id="stat-admin-volume">₹0</div>
                 </div>
             </div>
         </div>
 
-        <!-- 2. Products Section -->
-        <div id="tab-admin-products" style="display: none;">
-            <div class="table-card">
-                <h3 style="font-size: 1.2rem; margin-bottom: 16px;">Platform Catalog & Moderation</h3>
-                <div style="overflow-x: auto;">
-                    <table class="cart-table">
-                        <thead>
-                            <tr>
-                                <th>Product ID</th>
-                                <th>Product Name</th>
-                                <th>Seller</th>
-                                <th>Category</th>
-                                <th>Price</th>
-                                <th>Stock</th>
-                                <th>Moderation Action</th>
-                            </tr>
-                        </thead>
-                        <tbody id="admin-products-tbody">
-                            <tr><td colspan="7" class="text-center" style="padding: 30px;">Loading products...</td></tr>
-                        </tbody>
-                    </table>
+        <!-- Registered Users Table -->
+        <section class="data-card" style="margin-bottom: 40px;">
+            <div class="section-header">
+                <div>
+                    <h2>Registered Users</h2>
+                    <p>Buyers, verified sellers, and platform administrators</p>
                 </div>
             </div>
-        </div>
 
-        <!-- 3. Orders Section -->
-        <div id="tab-admin-orders" style="display: none;">
-            <div class="table-card">
-                <h3 style="font-size: 1.2rem; margin-bottom: 16px;">All Platform Orders</h3>
-                <div style="overflow-x: auto;">
-                    <table class="cart-table">
-                        <thead>
-                            <tr>
-                                <th>Order #</th>
-                                <th>Buyer Name</th>
-                                <th>Total Amount</th>
-                                <th>Status</th>
-                                <th>Items</th>
-                                <th>Shipping Address</th>
-                                <th>Date</th>
-                            </tr>
-                        </thead>
-                        <tbody id="admin-orders-tbody">
-                            <tr><td colspan="7" class="text-center" style="padding: 30px;">Loading orders...</td></tr>
-                        </tbody>
-                    </table>
+            <div class="table-responsive">
+                <table class="custom-table">
+                    <thead>
+                        <tr>
+                            <th>User ID</th>
+                            <th>Name</th>
+                            <th>Email</th>
+                            <th>Role</th>
+                            <th>Joined Date</th>
+                        </tr>
+                    </thead>
+                    <tbody id="admin-users-table-body">
+                        <tr><td colspan="5" class="text-center text-muted" style="padding: 24px;">Loading users...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- Product Catalog Moderation Table -->
+        <section class="data-card" style="margin-bottom: 40px;">
+            <div class="section-header">
+                <div>
+                    <h2>Product Moderation</h2>
+                    <p>Audit and remove inappropriate marketplace listings with safety confirmation</p>
                 </div>
             </div>
-        </div>
+
+            <div class="table-responsive">
+                <table class="custom-table">
+                    <thead>
+                        <tr>
+                            <th>Product ID</th>
+                            <th>Product Name</th>
+                            <th>Category</th>
+                            <th>Seller</th>
+                            <th>Price</th>
+                            <th>Stock</th>
+                            <th>Moderation</th>
+                        </tr>
+                    </thead>
+                    <tbody id="admin-products-table-body">
+                        <tr><td colspan="7" class="text-center text-muted" style="padding: 24px;">Loading products...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- Platform Orders Audit Table -->
+        <section class="data-card" style="margin-bottom: 60px;">
+            <div class="section-header">
+                <div>
+                    <h2>Platform Orders Audit</h2>
+                    <p>Comprehensive transaction log of all completed purchases</p>
+                </div>
+            </div>
+
+            <div class="table-responsive">
+                <table class="custom-table">
+                    <thead>
+                        <tr>
+                            <th>Order ID</th>
+                            <th>Customer</th>
+                            <th>Date</th>
+                            <th>Items</th>
+                            <th>Total Amount</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody id="admin-orders-table-body">
+                        <tr><td colspan="6" class="text-center text-muted" style="padding: 24px;">Loading orders...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
     </main>
+
+    <!-- Product Removal Confirmation Modal -->
+    <div class="modal-backdrop" id="admin-delete-modal">
+        <div class="modal-card" style="max-width: 480px;">
+            <div class="modal-header">
+                <h3 style="color: var(--status-cancelled);">⚠️ Remove Inappropriate Product</h3>
+                <button class="modal-close" id="admin-cancel-delete-btn">&times;</button>
+            </div>
+
+            <p style="color: var(--text-main); font-size: 0.95rem; margin-bottom: 16px;">
+                Are you sure you want to remove the listing <strong id="delete-prod-name">Product</strong> from the marketplace?
+            </p>
+            <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 24px;">
+                This product will be permanently removed from the public catalog and cart databases. This action cannot be undone.
+            </p>
+
+            <div style="display: flex; gap: 12px;">
+                <button type="button" class="btn btn-danger" id="admin-confirm-delete-btn" style="flex: 1;">
+                    Yes, Remove Listing
+                </button>
+                <button type="button" class="btn btn-outline" onclick="document.getElementById('admin-delete-modal').classList.remove('active')">
+                    Cancel
+                </button>
+            </div>
+        </div>
+    </div>
 
     <!-- Footer -->
     <footer class="site-footer">
         <div class="container footer-inner">
             <div>
-                <strong style="color: var(--primary);">MONICA MART</strong> — Multi-Seller E-Commerce Marketplace
-                <p style="font-size: 0.82rem; margin-top: 4px;">Developer: Monica Sornam | College Capstone Project</p>
+                <strong style="color: var(--lavender-dark);">MONICA MART</strong> — College Capstone Project by Monica Sornam
             </div>
-            <div>&copy; 2026 MONICA MART. All rights reserved.</div>
+            <div>
+                <span style="color: var(--text-muted);">&copy; 2026 MONICA MART. All rights reserved.</span>
+            </div>
         </div>
     </footer>
 
-    <script src="js/app.js"></script>
-    <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            const user = AppState.getUser();
-            if (!user || user.role !== 'ADMIN') {
-                showToast('Unauthorized access. Only ADMIN accounts can enter.', 'error');
-                setTimeout(() => window.location.href = 'login.html', 1000);
-                return;
-            }
-
-            document.getElementById('admin-welcome-title').textContent = `Admin Dashboard — Welcome, ${user.name}`;
-            loadAdminData();
-        });
-
-        function switchAdminTab(tab) {
-            document.querySelectorAll('.tab-btn').forEach((btn, idx) => {
-                btn.classList.toggle('active', 
-                    (tab === 'users' && idx === 0) || 
-                    (tab === 'products' && idx === 1) || 
-                    (tab === 'orders' && idx === 2)
-                );
-            });
-
-            document.getElementById('tab-admin-users').style.display = tab === 'users' ? 'block' : 'none';
-            document.getElementById('tab-admin-products').style.display = tab === 'products' ? 'block' : 'none';
-            document.getElementById('tab-admin-orders').style.display = tab === 'orders' ? 'block' : 'none';
-        }
-
-        async function loadAdminData() {
-            // Stats
-            const statsRes = await apiRequest('/admin/stats');
-            if (statsRes.ok && statsRes.data.success) {
-                const s = statsRes.data.stats;
-                document.getElementById('stat-total-users').textContent = s.total_users;
-                document.getElementById('stat-total-products').textContent = s.total_products;
-                document.getElementById('stat-total-orders').textContent = s.total_orders;
-                document.getElementById('stat-total-revenue').textContent = formatPrice(s.total_revenue);
-            }
-
-            // Users
-            const uRes = await apiRequest('/admin/users');
-            if (uRes.ok && uRes.data.success) {
-                const users = uRes.data.users || [];
-                document.getElementById('admin-users-tbody').innerHTML = users.map(u => {
-                    let roleBadge = 'badge-purple';
-                    if (u.role === 'ADMIN') roleBadge = 'badge-danger';
-                    else if (u.role === 'SELLER') roleBadge = 'badge-warning';
-
-                    return `
-                        <tr>
-                            <td class="bold">#${u.id}</td>
-                            <td>${u.name}</td>
-                            <td>${u.email}</td>
-                            <td><span class="badge ${roleBadge}">${u.role}</span></td>
-                            <td class="text-muted" style="font-size: 0.85rem;">${u.created_at || ''}</td>
-                        </tr>
-                    `;
-                }).join('');
-            }
-
-            // Products
-            const pRes = await apiRequest('/admin/products');
-            if (pRes.ok && pRes.data.success) {
-                const products = pRes.data.products || [];
-                document.getElementById('admin-products-tbody').innerHTML = products.map(p => `
-                    <tr>
-                        <td class="bold">#${p.product_id}</td>
-                        <td>
-                            <div class="cart-item-info">
-                                <img src="${p.image || 'https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=600'}" class="cart-item-img" style="width: 36px; height: 36px;">
-                                <strong>${p.product_name}</strong>
-                            </div>
-                        </td>
-                        <td>${p.seller_name}</td>
-                        <td><span class="badge badge-purple">${p.category}</span></td>
-                        <td class="bold">${formatPrice(p.price)}</td>
-                        <td>${p.quantity}</td>
-                        <td>
-                            <button class="btn btn-sm btn-danger" onclick="adminRemoveProduct(${p.product_id}, '${p.product_name.replace(/'/g, "\\'")}')">
-                                🗑️ Remove Inappropriate
-                            </button>
-                        </td>
-                    </tr>
-                `).join('');
-            }
-
-            // Orders
-            const oRes = await apiRequest('/admin/orders');
-            if (oRes.ok && oRes.data.success) {
-                const orders = oRes.data.orders || [];
-                document.getElementById('admin-orders-tbody').innerHTML = orders.map(ord => `
-                    <tr>
-                        <td class="bold">#${ord.order_id}</td>
-                        <td>
-                            <strong>${ord.buyer_name}</strong><br>
-                            <span class="text-muted" style="font-size: 0.8rem;">${ord.buyer_email}</span>
-                        </td>
-                        <td class="bold" style="color: var(--primary);">${formatPrice(ord.total_amount)}</td>
-                        <td><span class="badge badge-warning">${ord.status}</span></td>
-                        <td style="font-size: 0.85rem;">
-                            ${(ord.items || []).map(i => `${i.product_name} (×${i.quantity})`).join(', ')}
-                        </td>
-                        <td style="font-size: 0.82rem;" class="text-muted">${ord.shipping_address || 'Default'}</td>
-                        <td style="font-size: 0.82rem;" class="text-muted">${ord.created_at || ''}</td>
-                    </tr>
-                `).join('');
-            }
-        }
-
-        async function adminRemoveProduct(id, name) {
-            if (!confirm(`ADMIN CONFIRMATION:\nAre you sure you want to remove inappropriate product "${name}" (ID: #${id}) from the marketplace?`)) {
-                return;
-            }
-
-            const res = await apiRequest(`/admin/products/${id}`, 'DELETE');
-            if (res.ok && res.data.success) {
-                showToast(res.data.message || 'Product removed by admin.', 'success');
-                loadAdminData();
-            } else {
-                showToast(res.data.message || 'Failed to remove product.', 'error');
-            }
-        }
-    </script>
+    <!-- Scripts -->
+    <script src="js/main.js"></script>
+    <script src="js/admin.js"></script>
+    <script src="js/chatbot.js"></script>
 </body>
 </html>
