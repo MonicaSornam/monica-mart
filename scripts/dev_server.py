@@ -20,7 +20,7 @@ import hashlib
 import os
 import urllib.parse
 
-PORT = 8080
+PORT = int(os.environ.get("PORT", "8080"))
 DB_FILE = 'monica_mart.db'
 SCHEMA_FILE = os.path.join('sql', 'schema.sql')
 SEED_FILE = os.path.join('sql', 'seed.sql')
@@ -752,7 +752,7 @@ class MonicaMartHandler(http.server.SimpleHTTPRequestHandler):
 
 def run():
     init_db()
-    with socketserver.TCPServer(("", PORT), MonicaMartHandler) as httpd:
+    with socketserver.ThreadingTCPServer(("0.0.0.0", PORT), MonicaMartHandler) as httpd:
         print("=" * 65)
         print("             MONICA MART — SERVER RUNNING")
         print(f"             URL: http://localhost:{PORT}")
