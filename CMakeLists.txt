@@ -1,35 +1,29 @@
 cmake_minimum_required(VERSION 3.16)
 
-project(MonicaMart CXX)
+project(MonicaMart LANGUAGES CXX)
 
-# C++ settings
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
-# Include directories
 include_directories(
     ${CMAKE_CURRENT_SOURCE_DIR}/src
     ${CMAKE_CURRENT_SOURCE_DIR}/src/models
     ${CMAKE_CURRENT_SOURCE_DIR}/src/controllers
     ${CMAKE_CURRENT_SOURCE_DIR}/src/filters
-
     ${CMAKE_CURRENT_SOURCE_DIR}/backend
     ${CMAKE_CURRENT_SOURCE_DIR}/backend/models
     ${CMAKE_CURRENT_SOURCE_DIR}/backend/controllers
     ${CMAKE_CURRENT_SOURCE_DIR}/backend/filters
 )
 
-# Find dependencies
 find_package(Drogon REQUIRED)
 find_package(Threads REQUIRED)
+find_package(SQLite3 REQUIRED)
 
-# Backend source files
 set(SOURCES
     src/main.cc
-
     src/models/DbManager.cc
-
     src/controllers/AuthController.cc
     src/controllers/ProductController.cc
     src/controllers/CartController.cc
@@ -40,20 +34,15 @@ set(SOURCES
     src/controllers/ChatbotController.cc
 )
 
-# Create executable
 add_executable(MonicaMart ${SOURCES})
 
-# Link libraries
 target_link_libraries(MonicaMart PRIVATE
     Drogon::Drogon
     SQLite::SQLite3
     Threads::Threads
 )
 
-# Copy web assets, SQL files, database files
-# and configuration after build
 add_custom_command(TARGET MonicaMart POST_BUILD
-
     COMMAND ${CMAKE_COMMAND} -E copy_directory
         ${CMAKE_CURRENT_SOURCE_DIR}/public
         $<TARGET_FILE_DIR:MonicaMart>/public
@@ -74,5 +63,5 @@ add_custom_command(TARGET MonicaMart POST_BUILD
         ${CMAKE_CURRENT_SOURCE_DIR}/config/config.json
         $<TARGET_FILE_DIR:MonicaMart>/config.json
 
-    COMMENT "Copying public web assets, SQL schema, database and config"
+    COMMENT "Copying Monica Mart assets and configuration"
 )
