@@ -19,7 +19,6 @@ include_directories(
 
 find_package(Drogon REQUIRED)
 find_package(Threads REQUIRED)
-find_package(SQLite3 REQUIRED)
 
 set(SOURCES
     src/main.cc
@@ -38,7 +37,6 @@ add_executable(MonicaMart ${SOURCES})
 
 target_link_libraries(MonicaMart PRIVATE
     Drogon::Drogon
-    SQLite::SQLite3
     Threads::Threads
 )
 
